@@ -12,16 +12,9 @@
         },
         {
             "type": "java",
-            "name": "Launch BatchJob",
+            "name": "Launch PostgresCdcStreamingJob",
             "request": "launch",
-            "mainClass": "dev.ramottamado.java.flink.BatchJob",
-            "projectName": "flink-java"
-        },
-        {
-            "type": "java",
-            "name": "Launch PostgreCdcStreamingJob",
-            "request": "launch",
-            "mainClass": "dev.ramottamado.java.flink.PostgreCdcStreamingJob",
+            "mainClass": "dev.ramottamado.java.flink.PostgresCdcStreamingJob",
             "projectName": "flink-java"
         }
     ]

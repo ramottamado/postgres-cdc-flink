@@ -26,9 +26,8 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.flink.streaming.util.serialization.JSONKeyValueDeserializationSchema;
 
-// import dev.ramottamado.java.flink.serialization.JSONValueDeserializationSchema;
+import dev.ramottamado.java.flink.util.serialization.JSONValueDeserializationSchema;
 
 /**
  * Skeleton for a Flink Streaming Job.
@@ -47,7 +46,7 @@ import org.apache.flink.streaming.util.serialization.JSONKeyValueDeserialization
  * main(String[] args)) method, change the respective entry in the POM.xml file
  * (simply search for 'mainClass').
  */
-public class PostgreCdcStreamingJob {
+public class PostgresCdcStreamingJob {
 
 	public static void main(String[] args) throws Exception {
 		// set up the streaming execution environment
@@ -58,10 +57,10 @@ public class PostgreCdcStreamingJob {
 		props.setProperty("group.id", MessageFormat.format("flink_consumer_{0}", UUID.randomUUID()));
 		props.setProperty("auto.offset.reset", "earliest");
 
-		DataStream<ObjectNode> postgreCdcStream = env.addSource(
-				new FlinkKafkaConsumer<>("postgres.public.users", new JSONKeyValueDeserializationSchema(false), props));
+		DataStream<ObjectNode> postgresCdcStream = env.addSource(
+				new FlinkKafkaConsumer<>("postgres.public.users", new JSONValueDeserializationSchema(), props));
 
-		DataStream<String> parsedStream = postgreCdcStream.map(record -> {
+		DataStream<String> parsedStream = postgresCdcStream.map(record -> {
 			try {
 				return record.get("value").get("payload").get("after").get("name").asText();
 			} catch (Exception e) {

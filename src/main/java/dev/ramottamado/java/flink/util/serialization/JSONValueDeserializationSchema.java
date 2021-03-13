@@ -1,4 +1,4 @@
-package dev.ramottamado.java.flink.serialization;
+package dev.ramottamado.java.flink.util.serialization;
 
 import java.io.IOException;
 
