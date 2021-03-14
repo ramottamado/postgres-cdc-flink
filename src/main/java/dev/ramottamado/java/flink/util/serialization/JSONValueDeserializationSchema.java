@@ -1,5 +1,7 @@
 package dev.ramottamado.java.flink.util.serialization;
 
+import static org.apache.flink.api.java.typeutils.TypeExtractor.getForClass;
+
 import java.io.IOException;
 
 import org.apache.flink.api.common.serialization.DeserializationSchema;
@@ -7,8 +9,6 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
-
-import static org.apache.flink.api.java.typeutils.TypeExtractor.getForClass;
 
 public class JSONValueDeserializationSchema implements DeserializationSchema<ObjectNode> {
 
