@@ -4,20 +4,24 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 
-import dev.ramottamado.java.flink.schema.Transactions;
-
-public class TransactionsEnvelopeParserMapFunction implements MapFunction<ObjectNode, Transactions> {
+public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> {
 
     private static final long serialVersionUID = 123456672L;
 
+    private final Class<T> gen;
+
+    public EnvelopeParserMapFunction(Class<T> gen) {
+        this.gen = gen;
+    }
+
     @Override
-    public Transactions map(ObjectNode value) throws Exception {
+    public T map(ObjectNode value) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            return mapper.treeToValue(value.get("value").get("payload").get("after"), Transactions.class);
+            return mapper.treeToValue(value.get("value").get("payload").get("after"), gen);
         } catch (Exception e) {
-            return new Transactions();
+            return gen.newInstance();
         }
     }
 

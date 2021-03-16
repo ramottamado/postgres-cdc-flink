@@ -9,9 +9,9 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotatio
 import dev.ramottamado.java.flink.util.jackson.deserializer.MicroTimestampDeserializer;
 import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
-public class Transactions {
+public class EnrichedTransactions {
 
-    public Transactions() {
+    public EnrichedTransactions() {
     }
 
     @JsonProperty("src_account")
@@ -25,6 +25,15 @@ public class Transactions {
 
     @JsonProperty("amount")
     private Double amount;
+
+    @JsonProperty("cif")
+    private String cif;
+
+    @JsonProperty("src_name")
+    private String srcName;
+
+    @JsonProperty("dest_name")
+    private String destname;
 
     @JsonProperty("trx_timestamp")
     @JsonSerialize(using = TimestampSerializer.class)
@@ -71,6 +80,36 @@ public class Transactions {
         this.amount = amount;
     }
 
+    @JsonProperty("cif")
+    public String getCif() {
+        return cif;
+    }
+
+    @JsonProperty("cif")
+    public void setCif(String cif) {
+        this.cif = cif;
+    }
+
+    @JsonProperty("src_name")
+    public String getSrcName() {
+        return srcName;
+    }
+
+    @JsonProperty("src_name")
+    public void setSrcName(String srcName) {
+        this.srcName = srcName;
+    }
+
+    @JsonProperty("dest_name")
+    public String getDestName() {
+        return destname;
+    }
+
+    @JsonProperty("dest_name")
+    public void setDestName(String destName) {
+        this.destname = destName;
+    }
+
     @JsonProperty("trx_timestamp")
     public LocalDateTime getTrxTimestamp() {
         return trxTimestamp;
@@ -80,5 +119,4 @@ public class Transactions {
     public void setTrxTimestamp(LocalDateTime trxTimestamp) {
         this.trxTimestamp = trxTimestamp;
     }
-
 }
