@@ -15,7 +15,7 @@
             "name": "Launch PostgresCdcStreamingJob",
             "request": "launch",
             "mainClass": "dev.ramottamado.java.flink.PostgresCdcStreamingJob",
-            "args": "--offset-reset earliest --bootstrap-server localhost:9092 --source-topic postgres.public.users",
+            "args": "--offset-reset earliest --bootstrap-server localhost:9092 --source-topic postgres.public.transactions",
             "projectName": "flink-java"
         }
     ]

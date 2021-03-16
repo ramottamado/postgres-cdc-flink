@@ -1,7 +1,7 @@
 package dev.ramottamado.java.flink.util.kafka;
 
-import static dev.ramottamado.java.flink.util.ParameterConstants.KAFKA_AUTO_OFFSET_RESET;
-import static dev.ramottamado.java.flink.util.ParameterConstants.KAFKA_BOOTSTRAP_SERVER;
+import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_AUTO_OFFSET_RESET;
+import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_BOOTSTRAP_SERVER;
 
 import java.text.MessageFormat;
 import java.util.Properties;

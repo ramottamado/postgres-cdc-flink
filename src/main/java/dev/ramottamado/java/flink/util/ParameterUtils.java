@@ -1,6 +1,6 @@
 package dev.ramottamado.java.flink.util;
 
-import static dev.ramottamado.java.flink.util.ParameterConstants.PROPERTIES_FILE;
+import static dev.ramottamado.java.flink.config.ParameterConfig.PROPERTIES_FILE;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.slf4j.Logger;
