@@ -1,6 +1,6 @@
 package dev.ramottamado.java.flink.schema;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -29,7 +29,7 @@ public class Transactions {
     @JsonProperty("trx_timestamp")
     @JsonSerialize(using = TimestampSerializer.class)
     @JsonDeserialize(using = MicroTimestampDeserializer.class)
-    private LocalDateTime trxTimestamp;
+    private Instant trxTimestamp;
 
     @JsonProperty("src_account")
     public String getSrcAccount() {
@@ -72,12 +72,12 @@ public class Transactions {
     }
 
     @JsonProperty("trx_timestamp")
-    public LocalDateTime getTrxTimestamp() {
+    public Instant getTrxTimestamp() {
         return trxTimestamp;
     }
 
     @JsonProperty("trx_timestamp")
-    public void setTrxTimestamp(LocalDateTime trxTimestamp) {
+    public void setTrxTimestamp(Instant trxTimestamp) {
         this.trxTimestamp = trxTimestamp;
     }
 

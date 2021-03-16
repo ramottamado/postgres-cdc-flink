@@ -2,28 +2,30 @@ package dev.ramottamado.java.flink.util.jackson.serializer;
 
 import java.io.IOException;
 import java.time.DateTimeException;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.SerializerProvider;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class TimestampSerializer extends StdSerializer<LocalDateTime> {
+public class TimestampSerializer extends StdSerializer<Instant> {
     private final static long serialVersionUID = 123718191L;
 
     public TimestampSerializer() {
         this(null);
     }
 
-    public TimestampSerializer(Class<LocalDateTime> x) {
+    public TimestampSerializer(Class<Instant> x) {
         super(x);
     }
 
     @Override
-    public void serialize(LocalDateTime value, JsonGenerator jg, SerializerProvider sp)
+    public void serialize(Instant value, JsonGenerator jg, SerializerProvider sp)
             throws IOException, DateTimeException {
-        String parsedLocalDateTime = value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        jg.writeString(parsedLocalDateTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Z"));
+        String parsedTimestamp = formatter.format(value);
+        jg.writeString(parsedTimestamp);
     }
 }
