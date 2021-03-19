@@ -31,6 +31,7 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
             return Instant.ofEpochSecond(timestamp, 0);
         } catch (Exception e) {
             logger.error("Local date is not valid.", e);
+
             return null;
         }
     }

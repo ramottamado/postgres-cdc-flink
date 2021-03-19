@@ -9,10 +9,14 @@ public class EnrichedTransactionsToStringMapFunction implements MapFunction<Enri
 
     private final static long serialVersionUID = -129393123132L;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     @Override
     public String map(EnrichedTransactions value) throws Exception {
+        if (mapper == null) {
+            mapper = new ObjectMapper();
+        }
+
         return mapper.valueToTree(value).toPrettyString();
     }
 }

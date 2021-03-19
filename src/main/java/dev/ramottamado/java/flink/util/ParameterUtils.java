@@ -15,10 +15,10 @@ public final class ParameterUtils {
 
         if (params.has(PROPERTIES_FILE)) {
             logger.info("Getting parameters from properties file");
+
             params = ParameterTool.fromPropertiesFile(params.getRequired(PROPERTIES_FILE)).mergeWith(params);
         }
 
         return params;
     }
-
 }

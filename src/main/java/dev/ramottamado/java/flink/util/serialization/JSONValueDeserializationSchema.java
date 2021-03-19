@@ -12,25 +12,28 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 
 public class JSONValueDeserializationSchema implements DeserializationSchema<ObjectNode> {
 
-    private static final long serialVersionUID = -91238719810201L;
-
     private ObjectMapper mapper;
+
+    private static final long serialVersionUID = -91238719810201L;
 
     @Override
     public ObjectNode deserialize(byte[] message) throws IOException {
         if (mapper == null) {
             mapper = new ObjectMapper();
         }
+
         ObjectNode node = mapper.createObjectNode();
+
         if (message != null) {
             node.set("value", mapper.readValue(message, JsonNode.class));
         }
+
         return node;
     }
 
     @Override
     public boolean isEndOfStream(ObjectNode nextElement) {
-        return false;
+        return false; // Unbounded stream
     }
 
     @Override

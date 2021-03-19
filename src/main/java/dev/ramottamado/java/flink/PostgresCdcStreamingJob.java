@@ -7,10 +7,15 @@ import java.util.Properties;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.TimeCharacteristic;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dev.ramottamado.java.flink.functions.DestinationAccountKeySelector;
 import dev.ramottamado.java.flink.functions.EnrichEnrichedTransactionsWithCustomersJoinFunction;
@@ -22,6 +27,7 @@ import dev.ramottamado.java.flink.schema.Transactions;
 import dev.ramottamado.java.flink.util.ParameterUtils;
 import dev.ramottamado.java.flink.util.kafka.KafkaProperties;
 import dev.ramottamado.java.flink.util.serialization.DebeziumJSONEnvelopeDeserializationSchema;
+import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsJSONSerializationSchema;
 
 /**
  * Stream PostgreSQL CDC from Debezium into Flink.
@@ -40,36 +46,63 @@ public class PostgresCdcStreamingJob {
 
 		// set up the streaming execution environment
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
+		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
-		env.setParallelism(2);
+		env.setParallelism(1);
 		env.enableCheckpointing(10000L);
 		// env.getConfig().disableGenericTypes();
 
+		Logger logger = LoggerFactory.getLogger(PostgresCdcStreamingJob.class);
+
 		CheckpointConfig config = env.getCheckpointConfig();
-		config.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
+		config.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
-		DataStream<Transactions> transactionsCdcStream = env
-				.addSource(new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_1),
-						new DebeziumJSONEnvelopeDeserializationSchema<Transactions>(Transactions.class), properties))
-				.keyBy(x -> x.getSrcAccount());
+		DebeziumJSONEnvelopeDeserializationSchema<Transactions> tDeserializationSchema = new DebeziumJSONEnvelopeDeserializationSchema<>(
+				Transactions.class);
 
-		DataStream<Customers> customersCdcStream = env
-				.addSource(new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_2),
-						new DebeziumJSONEnvelopeDeserializationSchema<Customers>(Customers.class), properties))
-				.keyBy(x -> x.getAcctNumber());
+		DebeziumJSONEnvelopeDeserializationSchema<Customers> cDeserializationSchema = new DebeziumJSONEnvelopeDeserializationSchema<>(
+				Customers.class);
 
-		DataStream<EnrichedTransactions> enrichedTrxStream = transactionsCdcStream.connect(customersCdcStream)
-				.process(new EnrichTransactionsWithCustomersJoinFunction()).uid("enrich");
+		EnrichedTransactionsJSONSerializationSchema etxSerializationSchema = new EnrichedTransactionsJSONSerializationSchema(
+				"enriched_transactions");
 
-		DataStream<EnrichedTransactions> enrichedTrxStream2 = enrichedTrxStream
-				.keyBy(new DestinationAccountKeySelector()).connect(customersCdcStream)
-				.process(new EnrichEnrichedTransactionsWithCustomersJoinFunction()).uid("enrich2");
+		FlinkKafkaConsumer<Transactions> tKafkaConsumer = new FlinkKafkaConsumer<>(
+				params.getRequired(KAFKA_SOURCE_TOPIC_1), tDeserializationSchema, properties);
 
-		DataStream<String> parsedStream2 = enrichedTrxStream2.map(new EnrichedTransactionsToStringMapFunction());
+		FlinkKafkaConsumer<Customers> cKafkaConsumer = new FlinkKafkaConsumer<>(
+				params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties);
 
-		parsedStream2.print();
+		tKafkaConsumer.setStartFromEarliest();
+		cKafkaConsumer.setStartFromEarliest();
+
+		FlinkKafkaProducer<EnrichedTransactions> etxKafkaProducer = new FlinkKafkaProducer<>("enriched_transactions",
+				etxSerializationSchema, properties, FlinkKafkaProducer.Semantic.AT_LEAST_ONCE);
+
+		DestinationAccountKeySelector destinationAccountKeySelector = new DestinationAccountKeySelector();
+
+		EnrichTransactionsWithCustomersJoinFunction join1 = new EnrichTransactionsWithCustomersJoinFunction();
+
+		EnrichEnrichedTransactionsWithCustomersJoinFunction join2 = new EnrichEnrichedTransactionsWithCustomersJoinFunction();
+
+		EnrichedTransactionsToStringMapFunction enrichedTransactionsParser = new EnrichedTransactionsToStringMapFunction();
+
+		KeyedStream<Customers, String> customersCdcStream = env.addSource(cKafkaConsumer).keyBy(x -> x.getAcctNumber());
+
+		KeyedStream<Transactions, String> transactionsCdcStream = env.addSource(tKafkaConsumer)
+				.uid("transactions_cdc_stream").keyBy(x -> x.getSrcAccount());
+
+		SingleOutputStreamOperator<EnrichedTransactions> enrichedTrxStream = transactionsCdcStream
+				.connect(customersCdcStream).process(join1).uid("enriched_transactions")
+				.keyBy(destinationAccountKeySelector).connect(customersCdcStream).process(join2)
+				.uid("enriched_transactions_2");
+
+		SingleOutputStreamOperator<String> parsedStream = enrichedTrxStream.map(enrichedTransactionsParser);
+
+		enrichedTrxStream.addSink(etxKafkaProducer);
+
+		parsedStream.print();
 
 		// execute program
-		env.execute("Flink Streaming Java API Skeleton");
+		env.execute("Flink Streaming PostgreSQL CDC");
 	}
 }

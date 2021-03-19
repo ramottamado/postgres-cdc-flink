@@ -80,5 +80,4 @@ public class Transactions {
     public void setTrxTimestamp(Instant trxTimestamp) {
         this.trxTimestamp = trxTimestamp;
     }
-
 }

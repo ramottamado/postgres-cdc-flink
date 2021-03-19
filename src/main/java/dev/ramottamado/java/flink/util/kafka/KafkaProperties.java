@@ -29,5 +29,4 @@ public class KafkaProperties {
 
         return properties;
     }
-
 }

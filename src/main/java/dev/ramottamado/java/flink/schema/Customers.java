@@ -71,5 +71,4 @@ public class Customers {
     public void setCity(String city) {
         this.city = city;
     }
-
 }
