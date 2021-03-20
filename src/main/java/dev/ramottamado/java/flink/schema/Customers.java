@@ -4,8 +4,6 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonPro
 
 public class Customers {
 
-    public Customers() {}
-
     @JsonProperty("cif")
     private String cif;
 
@@ -20,6 +18,8 @@ public class Customers {
 
     @JsonProperty("city")
     private String city;
+
+    public Customers() {}
 
     @JsonProperty("cif")
     public String getCif() {

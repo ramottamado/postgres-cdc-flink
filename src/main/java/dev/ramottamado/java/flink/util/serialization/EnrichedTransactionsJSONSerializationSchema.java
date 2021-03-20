@@ -11,12 +11,9 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 public class EnrichedTransactionsJSONSerializationSchema implements KafkaSerializationSchema<EnrichedTransactions> {
 
-    private String topic;
-
-    private ObjectMapper mapper;
-
     private final static long serialVersionUID = -102983L;
-
+    private String topic;
+    private ObjectMapper mapper;
     private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsJSONSerializationSchema.class);
 
     public EnrichedTransactionsJSONSerializationSchema(String topic) {

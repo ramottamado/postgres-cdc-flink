@@ -12,10 +12,10 @@
         },
         {
             "type": "java",
-            "name": "Launch PostgresCdcStreamingJob",
+            "name": "Launch KafkaTransactionsEnrichmentStreamingJob",
             "request": "launch",
-            "mainClass": "dev.ramottamado.java.flink.PostgresCdcStreamingJob",
-            "args": "--offset-reset earliest --bootstrap-server localhost:9092 --source-topic-1 postgres.public.transactions --source-topic-2 postgres.public.customers",
+            "mainClass": "dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob",
+            "args": "--offset-reset earliest --bootstrap-server localhost:9092 --source-topic-1 postgres.public.transactions --source-topic-2 postgres.public.customers --debug-result-stream true --environment development --checkpoint-path file:///tmp/checkpoints",
             "projectName": "flink-java"
         }
     ]

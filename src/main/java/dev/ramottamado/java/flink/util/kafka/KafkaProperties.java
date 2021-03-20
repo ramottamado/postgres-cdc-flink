@@ -25,7 +25,7 @@ public class KafkaProperties {
                                                                                                            // Replace
                                                                                                            // with
                                                                                                            // actual
-                                                                                                           // group id.
+                                                                                                           // group id
         properties.setProperty("auto.offset.reset", params.get(KAFKA_AUTO_OFFSET_RESET));
 
         return properties;

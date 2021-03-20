@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 
 public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
 
+
+    private static final long serialVersionUID = 8178417124781L;
+    private static final Logger logger = LoggerFactory.getLogger(MicroTimestampDeserializer.class);
+
     public MicroTimestampDeserializer() {
 
         this(null);
@@ -20,10 +24,6 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
 
         super(vc);
     }
-
-    private final static long serialVersionUID = 8178417124781L;
-
-    private final static Logger logger = LoggerFactory.getLogger(MicroTimestampDeserializer.class);
 
     @Override
     public Instant deserialize(JsonParser jp, DeserializationContext ctx) throws IOException {

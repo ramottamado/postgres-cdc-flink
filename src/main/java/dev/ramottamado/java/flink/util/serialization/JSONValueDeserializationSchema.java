@@ -12,9 +12,8 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 
 public class JSONValueDeserializationSchema implements DeserializationSchema<ObjectNode> {
 
-    private ObjectMapper mapper;
-
     private static final long serialVersionUID = -91238719810201L;
+    private ObjectMapper mapper;
 
     @Override
     public ObjectNode deserialize(byte[] message) throws IOException {

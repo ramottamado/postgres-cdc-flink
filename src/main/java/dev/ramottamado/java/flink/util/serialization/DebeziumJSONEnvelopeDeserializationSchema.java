@@ -9,14 +9,13 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 
 public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeserializationSchema<T> {
 
+    private static final long serialVersionUID = -91238719810201L;
+    private ObjectMapper mapper;
+
     public DebeziumJSONEnvelopeDeserializationSchema(Class<T> type) {
 
         super(type);
     }
-
-    private ObjectMapper mapper;
-
-    private static final long serialVersionUID = -91238719810201L;
 
     @Override
     public T deserialize(byte[] message) throws IOException {

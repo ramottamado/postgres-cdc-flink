@@ -6,16 +6,15 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 
 public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> {
 
+
+    private static final long serialVersionUID = 123456672L;
+    private final Class<T> type;
+    private ObjectMapper mapper;
+
     public EnvelopeParserMapFunction(Class<T> type) {
 
         this.type = type;
     }
-
-    private final Class<T> type;
-
-    private static final long serialVersionUID = 123456672L;
-
-    private ObjectMapper mapper;
 
     @Override
     public T map(ObjectNode value) throws Exception {

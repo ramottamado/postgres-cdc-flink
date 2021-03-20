@@ -11,8 +11,6 @@ import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
 public class EnrichedTransactions {
 
-    public EnrichedTransactions() {}
-
     @JsonProperty("src_account")
     private String srcAccount;
 
@@ -39,6 +37,8 @@ public class EnrichedTransactions {
     @JsonDeserialize(using = MicroTimestampDeserializer.class)
     private Instant trxTimestamp;
 
+    public EnrichedTransactions() {}
+
     @JsonProperty("src_account")
     public String getSrcAccount() {
 
@@ -54,7 +54,8 @@ public class EnrichedTransactions {
     @JsonProperty("dest_acct")
     public String getDestAcct() {
 
-        return destAcct;
+        if (destAcct == null) return destAcct;
+        else return "NULL";
     }
 
     @JsonProperty("dest_acct")

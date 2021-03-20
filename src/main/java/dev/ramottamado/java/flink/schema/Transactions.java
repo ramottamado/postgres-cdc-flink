@@ -11,8 +11,6 @@ import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
 public class Transactions {
 
-    public Transactions() {}
-
     @JsonProperty("src_account")
     private String srcAccount;
 
@@ -29,6 +27,8 @@ public class Transactions {
     @JsonSerialize(using = TimestampSerializer.class)
     @JsonDeserialize(using = MicroTimestampDeserializer.class)
     private Instant trxTimestamp;
+
+    public Transactions() {}
 
     @JsonProperty("src_account")
     public String getSrcAccount() {

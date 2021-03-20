@@ -6,8 +6,6 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import dev.ramottamado.java.flink.schema.Customers;
 import dev.ramottamado.java.flink.schema.EnrichedTransactions;
@@ -15,12 +13,8 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 public class EnrichEnrichedTransactionsWithCustomersJoinFunction
         extends KeyedCoProcessFunction<String, EnrichedTransactions, Customers, EnrichedTransactions> {
 
-    private ValueState<Customers> referenceDataState;
-
     private static final long serialVersionUID = 12319238113L;
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(EnrichEnrichedTransactionsWithCustomersJoinFunction.class);
+    private ValueState<Customers> referenceDataState;
 
     @Override
     public void open(Configuration parameters) {

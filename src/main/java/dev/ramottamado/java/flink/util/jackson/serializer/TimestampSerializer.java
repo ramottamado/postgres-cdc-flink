@@ -12,19 +12,22 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ser.std.S
 
 public class TimestampSerializer extends StdSerializer<Instant> {
 
+    private static final long serialVersionUID = 123718191L;
+
     public TimestampSerializer() {
+
         this(null);
     }
 
     public TimestampSerializer(Class<Instant> type) {
+
         super(type);
     }
-
-    private final static long serialVersionUID = 123718191L;
 
     @Override
     public void serialize(Instant value, JsonGenerator jg, SerializerProvider sp)
             throws IOException, DateTimeException {
+
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd HH:mm:ss")
                 .withZone(ZoneId.of("Z"));
