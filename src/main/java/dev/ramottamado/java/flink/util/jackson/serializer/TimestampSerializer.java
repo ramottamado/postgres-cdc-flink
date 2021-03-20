@@ -25,7 +25,9 @@ public class TimestampSerializer extends StdSerializer<Instant> {
     @Override
     public void serialize(Instant value, JsonGenerator jg, SerializerProvider sp)
             throws IOException, DateTimeException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Z"));
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.of("Z"));
         String parsedTimestamp = formatter.format(value);
 
         jg.writeString(parsedTimestamp);

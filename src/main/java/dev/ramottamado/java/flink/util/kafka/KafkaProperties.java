@@ -16,6 +16,7 @@ public class KafkaProperties {
     private static final Logger logger = LoggerFactory.getLogger(KafkaProperties.class);
 
     public static final Properties getProperties(ParameterTool params) throws RuntimeException {
+
         logger.info("Getting properties");
 
         Properties properties = new Properties();

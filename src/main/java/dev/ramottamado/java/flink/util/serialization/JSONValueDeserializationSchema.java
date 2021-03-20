@@ -18,6 +18,7 @@ public class JSONValueDeserializationSchema implements DeserializationSchema<Obj
 
     @Override
     public ObjectNode deserialize(byte[] message) throws IOException {
+
         if (mapper == null) {
             mapper = new ObjectMapper();
         }
@@ -33,11 +34,13 @@ public class JSONValueDeserializationSchema implements DeserializationSchema<Obj
 
     @Override
     public boolean isEndOfStream(ObjectNode nextElement) {
+
         return false; // Unbounded stream
     }
 
     @Override
     public TypeInformation<ObjectNode> getProducedType() {
+
         return getForClass(ObjectNode.class);
     }
 }

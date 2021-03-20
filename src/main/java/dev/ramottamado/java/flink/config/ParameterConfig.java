@@ -2,8 +2,7 @@ package dev.ramottamado.java.flink.config;
 
 public final class ParameterConfig {
 
-    private ParameterConfig() {
-    }
+    private ParameterConfig() {}
 
     public final static String KAFKA_AUTO_OFFSET_RESET = "offset-reset";
     public final static String KAFKA_BOOTSTRAP_SERVER = "bootstrap-server";

@@ -25,17 +25,23 @@ public class EnrichTransactionsWithCustomersJoinFunction
     private static final Logger logger = LoggerFactory.getLogger(EnrichTransactionsWithCustomersJoinFunction.class);
 
     private class TrxWithTimestamp {
+
         long timestamp;
         Transactions trx;
     }
 
     @Override
     public void open(Configuration parameters) {
-        ValueStateDescriptor<Customers> cDescriptor = new ValueStateDescriptor<>("customers",
-                TypeInformation.of(Customers.class));
 
-        ValueStateDescriptor<TrxWithTimestamp> trxWTimestampDescriptor = new ValueStateDescriptor<>("trxWithTimestamp",
-                TypeInformation.of(TrxWithTimestamp.class));
+        ValueStateDescriptor<Customers> cDescriptor = new ValueStateDescriptor<>(
+                "customers",
+                TypeInformation.of(Customers.class)
+        );
+
+        ValueStateDescriptor<TrxWithTimestamp> trxWTimestampDescriptor = new ValueStateDescriptor<>(
+                "trxWithTimestamp",
+                TypeInformation.of(TrxWithTimestamp.class)
+        );
 
         referenceDataState = getRuntimeContext().getState(cDescriptor);
         latestTrx = getRuntimeContext().getState(trxWTimestampDescriptor);
@@ -43,6 +49,7 @@ public class EnrichTransactionsWithCustomersJoinFunction
 
     @Override
     public void processElement1(Transactions value, Context ctx, Collector<EnrichedTransactions> out) throws Exception {
+
         Customers customers = referenceDataState.value();
 
         if (customers != null) {
@@ -59,6 +66,7 @@ public class EnrichTransactionsWithCustomersJoinFunction
 
     @Override
     public void processElement2(Customers value, Context ctx, Collector<EnrichedTransactions> out) throws Exception {
+
         referenceDataState.update(value);
     }
 
@@ -83,6 +91,7 @@ public class EnrichTransactionsWithCustomersJoinFunction
     }
 
     public EnrichedTransactions joinTrxWithCustomers(Transactions trx, Customers cust) {
+
         EnrichedTransactions enrichedTrx = new EnrichedTransactions();
 
         enrichedTrx.setCif(cust.getCif());
@@ -92,6 +101,7 @@ public class EnrichTransactionsWithCustomersJoinFunction
         enrichedTrx.setTrxTimestamp(trx.getTrxTimestamp());
         enrichedTrx.setTrxType(trx.getTrxType());
         enrichedTrx.setSrcName(cust.getFirstName() + " " + cust.getLastName());
+
         return enrichedTrx;
     }
 }

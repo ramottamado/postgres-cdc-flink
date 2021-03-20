@@ -13,6 +13,7 @@ public class EnrichedTransactionsToStringMapFunction implements MapFunction<Enri
 
     @Override
     public String map(EnrichedTransactions value) throws Exception {
+
         if (mapper == null) {
             mapper = new ObjectMapper();
         }

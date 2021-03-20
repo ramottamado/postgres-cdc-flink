@@ -20,12 +20,14 @@ public class EnrichedTransactionsJSONSerializationSchema implements KafkaSeriali
     private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsJSONSerializationSchema.class);
 
     public EnrichedTransactionsJSONSerializationSchema(String topic) {
+
         super();
         this.topic = topic;
     }
 
     @Override
     public ProducerRecord<byte[], byte[]> serialize(EnrichedTransactions element, Long timestamp) {
+
         byte[] message = null;
 
         if (mapper == null) {

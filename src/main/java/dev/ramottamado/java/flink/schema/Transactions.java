@@ -11,8 +11,7 @@ import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
 public class Transactions {
 
-    public Transactions() {
-    }
+    public Transactions() {}
 
     @JsonProperty("src_account")
     private String srcAccount;
@@ -33,51 +32,61 @@ public class Transactions {
 
     @JsonProperty("src_account")
     public String getSrcAccount() {
+
         return srcAccount;
     }
 
     @JsonProperty("src_account")
     public void setSrcAccount(String srcAccount) {
+
         this.srcAccount = srcAccount;
     }
 
     @JsonProperty("dest_acct")
     public String getDestAcct() {
+
         return destAcct;
     }
 
     @JsonProperty("dest_acct")
     public void setDestAcct(String destAcct) {
+
         this.destAcct = destAcct;
     }
 
     @JsonProperty("trx_type")
     public String getTrxType() {
+
         return trxType;
     }
 
     @JsonProperty("trx_type")
     public void setTrxType(String trxType) {
+
         this.trxType = trxType;
     }
 
     @JsonProperty("amount")
     public Double getAmount() {
+
         return amount;
     }
 
     @JsonProperty("amount")
     public void setAmount(Double amount) {
+
         this.amount = amount;
     }
 
     @JsonProperty("trx_timestamp")
     public Instant getTrxTimestamp() {
+
         return trxTimestamp;
     }
 
     @JsonProperty("trx_timestamp")
     public void setTrxTimestamp(Instant trxTimestamp) {
+
         this.trxTimestamp = trxTimestamp;
     }
 }

@@ -14,6 +14,7 @@ public class DestinationAccountKeySelector implements KeySelector<EnrichedTransa
 
     @Override
     public String getKey(EnrichedTransactions etx) {
+
         String destAcct = etx.getDestAcct();
 
         if (destAcct != null) {

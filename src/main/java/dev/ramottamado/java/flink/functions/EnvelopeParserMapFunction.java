@@ -7,6 +7,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> {
 
     public EnvelopeParserMapFunction(Class<T> type) {
+
         this.type = type;
     }
 
@@ -18,6 +19,7 @@ public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> 
 
     @Override
     public T map(ObjectNode value) throws Exception {
+
         if (mapper == null) {
             mapper = new ObjectMapper();
         }

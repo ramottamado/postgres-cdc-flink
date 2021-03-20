@@ -24,8 +24,11 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
 
     @Override
     public void open(Configuration parameters) {
-        ValueStateDescriptor<Customers> descriptor = new ValueStateDescriptor<>("customers",
-                TypeInformation.of(Customers.class));
+
+        ValueStateDescriptor<Customers> descriptor = new ValueStateDescriptor<>(
+                "customers",
+                TypeInformation.of(Customers.class)
+        );
 
         referenceDataState = getRuntimeContext().getState(descriptor);
     }
@@ -33,6 +36,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     @Override
     public void processElement1(EnrichedTransactions value, Context ctx, Collector<EnrichedTransactions> out)
             throws Exception {
+
         Customers customersState = referenceDataState.value();
 
         if (ctx.getCurrentKey() != "NULL" && customersState != null) {
@@ -48,6 +52,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     @Override
     public void processElement2(Customers value, Context ctx, Collector<EnrichedTransactions> collector)
             throws Exception {
+
         referenceDataState.update(value);
     }
 }

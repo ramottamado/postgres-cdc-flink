@@ -10,6 +10,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeserializationSchema<T> {
 
     public DebeziumJSONEnvelopeDeserializationSchema(Class<T> type) {
+
         super(type);
     }
 
@@ -19,6 +20,7 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
 
     @Override
     public T deserialize(byte[] message) throws IOException {
+
         if (mapper == null) {
             mapper = new ObjectMapper();
         }
@@ -30,9 +32,12 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
         }
 
         try {
-            return mapper.treeToValue(node.get("value").get("payload").get("after"),
-                    super.getProducedType().getTypeClass());
+            return mapper.treeToValue(
+                    node.get("value").get("payload").get("after"),
+                    super.getProducedType().getTypeClass()
+            );
         } catch (Exception e) {
+
             try {
                 return super.getProducedType().getTypeClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e1) {

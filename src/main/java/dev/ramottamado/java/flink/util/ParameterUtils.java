@@ -11,6 +11,7 @@ public final class ParameterUtils {
     private static final Logger logger = LoggerFactory.getLogger(ParameterUtils.class);
 
     public static ParameterTool parseArgs(String[] args) throws Exception {
+
         ParameterTool params = ParameterTool.fromArgs(args);
 
         if (params.has(PROPERTIES_FILE)) {

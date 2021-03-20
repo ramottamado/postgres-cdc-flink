@@ -12,10 +12,12 @@ import org.slf4j.LoggerFactory;
 public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
 
     public MicroTimestampDeserializer() {
+
         this(null);
     }
 
     public MicroTimestampDeserializer(Class<?> vc) {
+
         super(vc);
     }
 
@@ -25,6 +27,7 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
 
     @Override
     public Instant deserialize(JsonParser jp, DeserializationContext ctx) throws IOException {
+
         Long timestamp = jp.getLongValue() / 1000000;
 
         try {
