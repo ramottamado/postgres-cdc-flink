@@ -1,7 +1,7 @@
 package dev.ramottamado.java.flink;
 
 import static dev.ramottamado.java.flink.config.ParameterConfig.CHECKPOINT_PATH;
-import static dev.ramottamado.java.flink.config.ParameterConfig.RUNNING_ENVIRONMENT;
+import static dev.ramottamado.java.flink.config.ParameterConfig.ENVIRONMENT;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -15,42 +15,74 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import dev.ramottamado.java.flink.functions.EnrichEnrichedTransactionsWithCustomersJoinFunction;
 import dev.ramottamado.java.flink.functions.EnrichTransactionsWithCustomersJoinFunction;
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.CustomersBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.TransactionsBean;
 
-
+/**
+ * The abstract class {@link TransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for enriching
+ * {@link Transactions} data using Flink. The core pipeline and functionality is encapsulated here, while subclasses
+ * have to implement input and output methods. Check {@link KafkaTransactionsEnrichmentStreamingJob} for the
+ * implementation using data stream from Kafka.
+ *
+ * @see KafkaTransactionsEnrichmentStreamingJob
+ */
 public abstract class TransactionsEnrichmentStreamingJob {
+    /**
+     * Method to get {@link Transactions} data stream.
+     *
+     * @param  env              the Flink {@link StreamExecutionEnvironment} environment
+     * @param  params           the parameters from {@link ParameterTool}
+     * @return                  the {@link Transactions} data stream
+     * @throws RuntimeException if input cannot be read.
+     */
+    protected abstract DataStream<TransactionsBean> readTransactionsCdcStream(
+            StreamExecutionEnvironment env, ParameterTool params) throws RuntimeException;
 
-    protected abstract DataStream<Transactions> readTransactionsCdcStream(
-            StreamExecutionEnvironment env, ParameterTool params
-    ) throws Exception;
+    /**
+     * Method to get {@link Customers} data stream.
+     *
+     * @param  env              the Flink {@link StreamExecutionEnvironment} environment
+     * @param  params           the parameters from {@link ParameterTool}
+     * @return                  the {@link Customers} data stream
+     * @throws RuntimeException if input cannot be read.
+     */
+    protected abstract DataStream<CustomersBean> readCustomersCdcStream(
+            StreamExecutionEnvironment env, ParameterTool params) throws RuntimeException;
 
-    protected abstract DataStream<Customers> readCustomersCdcStream(
-            StreamExecutionEnvironment env, ParameterTool params
-    ) throws Exception;
-
+    /**
+     * Method to write {@link EnrichedTransactions} data stream to sink.
+     * 
+     * @param  enrichedTrxStream the {@link EnrichedTransactions} data stream
+     * @param  params            the parameters from {@link ParameterTool}
+     * @throws RuntimeException  if output cannot be written
+     */
     protected abstract void writeEnrichedTransactionsOutput(
-            DataStream<EnrichedTransactions> enrichedTrxStream, ParameterTool params
-    ) throws Exception;
+            DataStream<EnrichedTransactionsBean> enrichedTrxStream, ParameterTool params) throws RuntimeException;
 
-    public final StreamExecutionEnvironment createApplicationPipeline(ParameterTool params) throws Exception {
-
+    /**
+     * The core logic and pipeline for enriching {@link Transactions} data stream using data from {@link Customers}.
+     *
+     * @param  params           the parameters from {@link ParameterTool}
+     * @return                  the Flink {@link StreamExecutionEnvironment} environment
+     * @throws RuntimeException if input/output cannot be read/write
+     */
+    public final StreamExecutionEnvironment createApplicationPipeline(ParameterTool params) throws RuntimeException {
         StreamExecutionEnvironment env = createExecutionEnvironment(params);
 
-        KeyedStream<Customers, String> keyedCustomersCdcStream = readCustomersCdcStream(env, params)
-                .keyBy(Customers::getAcctNumber);
+        KeyedStream<CustomersBean, String> keyedCustomersCdcStream = readCustomersCdcStream(env, params)
+                .keyBy(CustomersBean::getAcctNumber);
 
-        KeyedStream<Transactions, String> keyedTransactionsStream = readTransactionsCdcStream(env, params)
-                .keyBy(Transactions::getSrcAccount);
+        KeyedStream<TransactionsBean, String> keyedTransactionsStream = readTransactionsCdcStream(env, params)
+                .keyBy(TransactionsBean::getSrcAccount);
 
-        KeyedStream<EnrichedTransactions, String> enrichedTrxStream = keyedTransactionsStream
+        KeyedStream<EnrichedTransactionsBean, String> enrichedTrxStream = keyedTransactionsStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions")
-                .keyBy(EnrichedTransactions::getDestAcct);
+                .keyBy(EnrichedTransactionsBean::getDestAcct);
 
-        SingleOutputStreamOperator<EnrichedTransactions> enrichedTrxStream2 = enrichedTrxStream
+        SingleOutputStreamOperator<EnrichedTransactionsBean> enrichedTrxStream2 = enrichedTrxStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichEnrichedTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions_2");
@@ -60,8 +92,7 @@ public abstract class TransactionsEnrichmentStreamingJob {
         return env;
     }
 
-    private StreamExecutionEnvironment createExecutionEnvironment(ParameterTool params) throws Exception {
-
+    private StreamExecutionEnvironment createExecutionEnvironment(ParameterTool params) throws RuntimeException {
         StreamExecutionEnvironment env;
         String checkpointPath = params.getRequired(CHECKPOINT_PATH);
         StateBackend stateBackend = new FsStateBackend(checkpointPath);
@@ -70,7 +101,7 @@ public abstract class TransactionsEnrichmentStreamingJob {
         conf.setString("state.backend", "filesystem");
         conf.setString("state.checkpoints.dir", checkpointPath);
 
-        if (params.get(RUNNING_ENVIRONMENT) == "development") {
+        if (params.get(ENVIRONMENT) == "development") {
             env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
         } else {
             env = StreamExecutionEnvironment.getExecutionEnvironment();

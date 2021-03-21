@@ -7,31 +7,31 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.CustomersBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 
+/**
+ * The {@link EnrichEnrichedTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
+ * to join the {@link EnrichedTransactionsBean} stream with {@link CustomersBean} stream.
+ */
 public class EnrichEnrichedTransactionsWithCustomersJoinFunction
-        extends KeyedCoProcessFunction<String, EnrichedTransactions, Customers, EnrichedTransactions> {
-
+        extends KeyedCoProcessFunction<String, EnrichedTransactionsBean, CustomersBean, EnrichedTransactionsBean> {
     private static final long serialVersionUID = 12319238113L;
-    private ValueState<Customers> referenceDataState;
+    private ValueState<CustomersBean> referenceDataState;
 
     @Override
     public void open(Configuration parameters) {
-
-        ValueStateDescriptor<Customers> descriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<CustomersBean> descriptor = new ValueStateDescriptor<>(
                 "customers",
-                TypeInformation.of(Customers.class)
-        );
+                TypeInformation.of(CustomersBean.class));
 
         referenceDataState = getRuntimeContext().getState(descriptor);
     }
 
     @Override
-    public void processElement1(EnrichedTransactions value, Context ctx, Collector<EnrichedTransactions> out)
+    public void processElement1(EnrichedTransactionsBean value, Context ctx, Collector<EnrichedTransactionsBean> out)
             throws Exception {
-
-        Customers customersState = referenceDataState.value();
+        CustomersBean customersState = referenceDataState.value();
 
         if (ctx.getCurrentKey() != "NULL" && customersState != null) {
             value.setDestName(customersState.getFirstName() + " " + customersState.getLastName());
@@ -44,9 +44,8 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement2(Customers value, Context ctx, Collector<EnrichedTransactions> collector)
+    public void processElement2(CustomersBean value, Context ctx, Collector<EnrichedTransactionsBean> collector)
             throws Exception {
-
         referenceDataState.update(value);
     }
 }

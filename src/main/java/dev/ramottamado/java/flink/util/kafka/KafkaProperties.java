@@ -2,31 +2,29 @@ package dev.ramottamado.java.flink.util.kafka;
 
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_AUTO_OFFSET_RESET;
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_BOOTSTRAP_SERVER;
+import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_CONSUMER_GROUP_ID;
 
-import java.text.MessageFormat;
 import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link KafkaProperties} allows for constructing new {@link Properties} for Kafka consumer from
+ * {@link ParameterTool}.
+ */
 public class KafkaProperties {
-
-    private static final Logger logger = LoggerFactory.getLogger(KafkaProperties.class);
-
+    /**
+     * Get new {@link Properties} from passed {@link ParameterTool}.
+     *
+     * @param  params           the parameters inside {@link ParameterTool}
+     * @return                  the properties for Kafka consumer to use
+     * @throws RuntimeException if {@link KAFKA_BOOTSTRAP_SERVER} is not set
+     */
     public static final Properties getProperties(ParameterTool params) throws RuntimeException {
-
-        logger.info("Getting properties");
-
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", params.getRequired(KAFKA_BOOTSTRAP_SERVER));
-        properties.setProperty("group.id", MessageFormat.format("flink_consumer_{0}", UUID.randomUUID())); // TODO:
-                                                                                                           // Replace
-                                                                                                           // with
-                                                                                                           // actual
-                                                                                                           // group id
-        properties.setProperty("auto.offset.reset", params.get(KAFKA_AUTO_OFFSET_RESET));
+        properties.setProperty("group.id", params.get(KAFKA_CONSUMER_GROUP_ID, "flink-cdc-consumer"));
+        properties.setProperty("auto.offset.reset", params.get(KAFKA_AUTO_OFFSET_RESET, "latest"));
 
         return properties;
     }

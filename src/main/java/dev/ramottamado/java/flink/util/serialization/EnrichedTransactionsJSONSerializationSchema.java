@@ -7,24 +7,31 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 
-public class EnrichedTransactionsJSONSerializationSchema implements KafkaSerializationSchema<EnrichedTransactions> {
-
+/**
+ * The {@link EnrichedTransactionsJSONSerializationSchema} describes how to serialize {@link EnrichedTransactionsBean}
+ * into {@link ProducerRecord} for Apache Kafka.
+ */
+public class EnrichedTransactionsJSONSerializationSchema implements KafkaSerializationSchema<EnrichedTransactionsBean> {
     private final static long serialVersionUID = -102983L;
+    private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsJSONSerializationSchema.class);
     private String topic;
     private ObjectMapper mapper;
-    private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsJSONSerializationSchema.class);
 
+    /**
+     * The {@link EnrichedTransactionsJSONSerializationSchema} describes how to serialize
+     * {@link EnrichedTransactionsBean} into {@link ProducerRecord} for Apache Kafka.
+     *
+     * @param topic the Kafka topic to publish the resulting records
+     */
     public EnrichedTransactionsJSONSerializationSchema(String topic) {
-
         super();
         this.topic = topic;
     }
 
     @Override
-    public ProducerRecord<byte[], byte[]> serialize(EnrichedTransactions element, Long timestamp) {
-
+    public ProducerRecord<byte[], byte[]> serialize(EnrichedTransactionsBean element, Long timestamp) {
         byte[] message = null;
 
         if (mapper == null) {

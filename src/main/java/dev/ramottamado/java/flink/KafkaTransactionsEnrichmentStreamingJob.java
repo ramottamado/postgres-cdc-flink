@@ -1,8 +1,10 @@
 package dev.ramottamado.java.flink;
 
 import static dev.ramottamado.java.flink.config.ParameterConfig.DEBUG_RESULT_STREAM;
+import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_OFFSET_STRATEGY;
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_SOURCE_TOPIC_1;
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_SOURCE_TOPIC_2;
+import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_TARGET_TOPIC;
 
 import java.util.Properties;
 
@@ -13,67 +15,84 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 import dev.ramottamado.java.flink.functions.EnrichedTransactionsToStringMapFunction;
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.CustomersBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.TransactionsBean;
 import dev.ramottamado.java.flink.util.ParameterUtils;
 import dev.ramottamado.java.flink.util.kafka.KafkaProperties;
 import dev.ramottamado.java.flink.util.serialization.DebeziumJSONEnvelopeDeserializationSchema;
 import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsJSONSerializationSchema;
 
+/**
+ * The class {@link KafkaTransactionsEnrichmentStreamingJob} provides {@link TransactionsEnrichmentStreamingJob}
+ * for enriching {@link Transactions} data using Flink.
+ *
+ * @see TransactionsEnrichmentStreamingJob
+ */
 public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
+    private DebeziumJSONEnvelopeDeserializationSchema<TransactionsBean> tDeserializationSchema =
+            new DebeziumJSONEnvelopeDeserializationSchema<>(TransactionsBean.class);
 
-    private DebeziumJSONEnvelopeDeserializationSchema<Transactions> tDeserializationSchema =
-            new DebeziumJSONEnvelopeDeserializationSchema<>(Transactions.class);
-
-    private DebeziumJSONEnvelopeDeserializationSchema<Customers> cDeserializationSchema =
-            new DebeziumJSONEnvelopeDeserializationSchema<>(Customers.class);
+    private DebeziumJSONEnvelopeDeserializationSchema<CustomersBean> cDeserializationSchema =
+            new DebeziumJSONEnvelopeDeserializationSchema<>(CustomersBean.class);
 
     private EnrichedTransactionsJSONSerializationSchema etxSerializationSchema =
             new EnrichedTransactionsJSONSerializationSchema("enriched_transactions");
 
     @Override
-    public final DataStream<Transactions> readTransactionsCdcStream(
-            StreamExecutionEnvironment env, ParameterTool params
-    ) throws Exception {
-
+    public final DataStream<TransactionsBean> readTransactionsCdcStream(
+            StreamExecutionEnvironment env, ParameterTool params) throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<Transactions> tKafkaConsumer = new FlinkKafkaConsumer<>(
-                params.getRequired(KAFKA_SOURCE_TOPIC_1), tDeserializationSchema, properties
-        );
+        FlinkKafkaConsumer<TransactionsBean> tKafkaConsumer = new FlinkKafkaConsumer<>(
+                params.getRequired(KAFKA_SOURCE_TOPIC_1),
+                tDeserializationSchema,
+                properties);
 
-        tKafkaConsumer.setStartFromEarliest();
+        String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
+
+        if (kafkaOffsetStrategy == "earliest") {
+            tKafkaConsumer.setStartFromEarliest();
+        } else if (kafkaOffsetStrategy == "latest") {
+            tKafkaConsumer.setStartFromLatest();
+        } else {
+            tKafkaConsumer.setStartFromGroupOffsets();
+        }
 
         return env.addSource(tKafkaConsumer);
     }
 
     @Override
-    public final DataStream<Customers> readCustomersCdcStream(StreamExecutionEnvironment env, ParameterTool params)
-            throws Exception {
-
+    public final DataStream<CustomersBean> readCustomersCdcStream(StreamExecutionEnvironment env, ParameterTool params)
+            throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<Customers> cKafkaConsumer = new FlinkKafkaConsumer<>(
-                params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties
-        );
+        FlinkKafkaConsumer<CustomersBean> cKafkaConsumer =
+                new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties);
 
-        cKafkaConsumer.setStartFromEarliest();
+        String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
+
+        if (kafkaOffsetStrategy == "earliest") {
+            cKafkaConsumer.setStartFromEarliest();
+        } else if (kafkaOffsetStrategy == "latest") {
+            cKafkaConsumer.setStartFromLatest();
+        } else {
+            cKafkaConsumer.setStartFromGroupOffsets();
+        }
 
         return env.addSource(cKafkaConsumer);
     }
 
     @Override
     public final void writeEnrichedTransactionsOutput(
-            DataStream<EnrichedTransactions> enrichedTrxStream, ParameterTool params
-    ) throws Exception {
-
+            DataStream<EnrichedTransactionsBean> enrichedTrxStream, ParameterTool params) throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaProducer<EnrichedTransactions> etxKafkaProducer = new FlinkKafkaProducer<>(
-                "enriched_transactions", etxSerializationSchema, properties,
-                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE
-        );
+        FlinkKafkaProducer<EnrichedTransactionsBean> etxKafkaProducer = new FlinkKafkaProducer<>(
+                params.get(KAFKA_TARGET_TOPIC, "enriched_transactions"),
+                etxSerializationSchema,
+                properties,
+                FlinkKafkaProducer.Semantic.AT_LEAST_ONCE);
 
         if (params.getBoolean(DEBUG_RESULT_STREAM, false) == true)
             enrichedTrxStream.map(new EnrichedTransactionsToStringMapFunction()).print();
@@ -81,14 +100,17 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
         enrichedTrxStream.addSink(etxKafkaProducer);
     }
 
+    /**
+     * Main method to run the application.
+     *
+     * @param  args      the arguments to pass into the application
+     * @throws Exception if some errors happened
+     */
     public static void main(String[] args) throws Exception {
-
         ParameterTool params = ParameterUtils.parseArgs(args);
 
         new KafkaTransactionsEnrichmentStreamingJob()
                 .createApplicationPipeline(params)
-                .execute();
-
+                .execute("Kafka Transactions Stream Enrichment");
     }
-
 }

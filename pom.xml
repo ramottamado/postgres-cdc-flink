@@ -21,10 +21,10 @@ under the License.
 
 	<groupId>dev.ramottamado.java.flink</groupId>
 	<artifactId>flink-java</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0-rc.1</version>
 	<packaging>jar</packaging>
 
-	<name>Flink Quickstart Job</name>
+	<name>Kafka Transactions Stream Enrichment</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -95,12 +95,6 @@ under the License.
 
 		<dependency>
 			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-core</artifactId>
-			<version>${flink.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
@@ -141,30 +135,6 @@ under the License.
 				</configuration>
 			</plugin>
 
-			<!-- Maven assembly -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.1</version>
-
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-
-			</plugin>
-
 			<!-- We use the maven-shade plugin to create a fat jar that contains all necessary dependencies. -->
 			<!-- Change the value of <mainClass>...</mainClass> if your program entry point changes. -->
 			<plugin>
@@ -201,7 +171,7 @@ under the License.
 							</filters>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>dev.ramottamado.java.flink.PostgresCdcStreamingJob</mainClass>
+									<mainClass>dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

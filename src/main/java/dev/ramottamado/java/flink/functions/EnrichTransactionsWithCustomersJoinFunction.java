@@ -7,49 +7,48 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.CustomersBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.TransactionsBean;
 
+/**
+ * The {@link EnrichTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
+ * to join the {@link TransactionsBean} stream with {@link CustomersBean} stream.
+ */
 public class EnrichTransactionsWithCustomersJoinFunction
-        extends KeyedCoProcessFunction<String, Transactions, Customers, EnrichedTransactions> {
-
+        extends KeyedCoProcessFunction<String, TransactionsBean, CustomersBean, EnrichedTransactionsBean> {
     private static final long serialVersionUID = 12319238113L;
-    private ValueState<Customers> referenceDataState;
-    private ValueState<TrxWithTimestamp> latestTrx;
+    private ValueState<CustomersBean> referenceDataState;
+    private ValueState<TransactionsWithTimestamp> latestTrx;
 
-    private class TrxWithTimestamp {
-
+    private class TransactionsWithTimestamp {
         long timestamp;
-        Transactions trx;
+        TransactionsBean trx;
     }
 
     @Override
     public void open(Configuration parameters) {
-
-        ValueStateDescriptor<Customers> cDescriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<CustomersBean> cDescriptor = new ValueStateDescriptor<>(
                 "customers",
-                TypeInformation.of(Customers.class)
-        );
+                TypeInformation.of(CustomersBean.class));
 
-        ValueStateDescriptor<TrxWithTimestamp> trxWTimestampDescriptor = new ValueStateDescriptor<>(
-                "trxWithTimestamp",
-                TypeInformation.of(TrxWithTimestamp.class)
-        );
+        ValueStateDescriptor<TransactionsWithTimestamp> tDescriptor = new ValueStateDescriptor<>(
+                "trWithTimestamp",
+                TypeInformation.of(TransactionsWithTimestamp.class));
 
         referenceDataState = getRuntimeContext().getState(cDescriptor);
-        latestTrx = getRuntimeContext().getState(trxWTimestampDescriptor);
+        latestTrx = getRuntimeContext().getState(tDescriptor);
     }
 
     @Override
-    public void processElement1(Transactions value, Context ctx, Collector<EnrichedTransactions> out) throws Exception {
-
-        Customers customers = referenceDataState.value();
+    public void processElement1(TransactionsBean value, Context ctx, Collector<EnrichedTransactionsBean> out)
+            throws Exception {
+        CustomersBean customers = referenceDataState.value();
 
         if (customers != null) {
             out.collect(joinTrxWithCustomers(value, customers));
         } else {
-            TrxWithTimestamp trxWithTimestamp = new TrxWithTimestamp();
+            TransactionsWithTimestamp trxWithTimestamp = new TransactionsWithTimestamp();
 
             trxWithTimestamp.timestamp = ctx.timestamp();
             trxWithTimestamp.trx = value;
@@ -59,34 +58,39 @@ public class EnrichTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement2(Customers value, Context ctx, Collector<EnrichedTransactions> out) throws Exception {
-
+    public void processElement2(CustomersBean value, Context ctx, Collector<EnrichedTransactionsBean> out)
+            throws Exception {
         referenceDataState.update(value);
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactions> out) throws Exception {
-
-        TrxWithTimestamp lastTrx = latestTrx.value();
-        EnrichedTransactions etx = new EnrichedTransactions();
+    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactionsBean> out) throws Exception {
+        TransactionsWithTimestamp lastTrx = latestTrx.value();
+        EnrichedTransactionsBean enrichedTrx = new EnrichedTransactionsBean();
 
         if (referenceDataState.value() != null) {
-            etx = joinTrxWithCustomers(lastTrx.trx, referenceDataState.value());
+            enrichedTrx = joinTrxWithCustomers(lastTrx.trx, referenceDataState.value());
         } else {
-            etx.setAmount(lastTrx.trx.getAmount());
-            etx.setSrcAccount(lastTrx.trx.getSrcAccount());
-            etx.setDestAcct(lastTrx.trx.getDestAcct());
-            etx.setTrxTimestamp(lastTrx.trx.getTrxTimestamp());
-            etx.setTrxType(lastTrx.trx.getTrxType());
+            enrichedTrx.setAmount(lastTrx.trx.getAmount());
+            enrichedTrx.setSrcAccount(lastTrx.trx.getSrcAccount());
+            enrichedTrx.setDestAcct(lastTrx.trx.getDestAcct());
+            enrichedTrx.setTrxTimestamp(lastTrx.trx.getTrxTimestamp());
+            enrichedTrx.setTrxType(lastTrx.trx.getTrxType());
         }
 
         latestTrx.clear();
-        out.collect(etx);
+        out.collect(enrichedTrx);
     }
 
-    public EnrichedTransactions joinTrxWithCustomers(Transactions trx, Customers cust) {
-
-        EnrichedTransactions enrichedTrx = new EnrichedTransactions();
+    /**
+     * Enrich {@link TransactionsBean} with {@link CustomersBean}, returning new {@link EnrichedTransactionsBean}.
+     *
+     * @param  trx  the transaction to enrich
+     * @param  cust the customer used to enrich the transaction record
+     * @return      the enriched transaction
+     */
+    public EnrichedTransactionsBean joinTrxWithCustomers(TransactionsBean trx, CustomersBean cust) {
+        EnrichedTransactionsBean enrichedTrx = new EnrichedTransactionsBean();
 
         enrichedTrx.setCif(cust.getCif());
         enrichedTrx.setAmount(trx.getAmount());
