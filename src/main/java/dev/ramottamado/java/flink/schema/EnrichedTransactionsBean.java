@@ -62,10 +62,7 @@ public class EnrichedTransactionsBean implements Serializable {
 
     @JsonProperty("dest_acct")
     public String getDestAcct() {
-        if (destAcct != null)
-            return destAcct;
-        else
-            return "NULL";
+        return (destAcct != null) ? destAcct : "NULL";
     }
 
     @JsonProperty("dest_acct")
