@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 Tamado Sitohang <ramot@ramottamado.dev>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package dev.ramottamado.java.flink.util.kafka;
 
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_AUTO_OFFSET_RESET;
@@ -18,7 +34,8 @@ public class KafkaProperties {
      *
      * @param  params           the parameters inside {@link ParameterTool}
      * @return                  the properties for Kafka consumer to use
-     * @throws RuntimeException if {@link KAFKA_BOOTSTRAP_SERVER} is not set
+     * @throws RuntimeException if {@value dev.ramottamado.java.flink.config.ParameterConfig#KAFKA_BOOTSTRAP_SERVER} is
+     *                          not set
      */
     public static final Properties getProperties(ParameterTool params) throws RuntimeException {
         Properties properties = new Properties();

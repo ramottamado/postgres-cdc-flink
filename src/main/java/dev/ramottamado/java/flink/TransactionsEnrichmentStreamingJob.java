@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 Tamado Sitohang <ramot@ramottamado.dev>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package dev.ramottamado.java.flink;
 
 import static dev.ramottamado.java.flink.config.ParameterConfig.CHECKPOINT_PATH;
@@ -19,9 +35,11 @@ import dev.ramottamado.java.flink.schema.CustomersBean;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 import dev.ramottamado.java.flink.schema.TransactionsBean;
 
+import java.util.Objects;
+
 /**
  * The abstract class {@link TransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for enriching
- * {@link Transactions} data using Flink. The core pipeline and functionality is encapsulated here, while subclasses
+ * {@link TransactionsBean} data using Flink. The core pipeline and functionality is encapsulated here, while subclasses
  * have to implement input and output methods. Check {@link KafkaTransactionsEnrichmentStreamingJob} for the
  * implementation using data stream from Kafka.
  *
@@ -29,31 +47,31 @@ import dev.ramottamado.java.flink.schema.TransactionsBean;
  */
 public abstract class TransactionsEnrichmentStreamingJob {
     /**
-     * Method to get {@link Transactions} data stream.
+     * Method to get {@link TransactionsBean} data stream.
      *
      * @param  env              the Flink {@link StreamExecutionEnvironment} environment
      * @param  params           the parameters from {@link ParameterTool}
-     * @return                  the {@link Transactions} data stream
+     * @return                  the {@link TransactionsBean} data stream
      * @throws RuntimeException if input cannot be read.
      */
     protected abstract DataStream<TransactionsBean> readTransactionsCdcStream(
             StreamExecutionEnvironment env, ParameterTool params) throws RuntimeException;
 
     /**
-     * Method to get {@link Customers} data stream.
+     * Method to get {@link CustomersBean} data stream.
      *
      * @param  env              the Flink {@link StreamExecutionEnvironment} environment
      * @param  params           the parameters from {@link ParameterTool}
-     * @return                  the {@link Customers} data stream
+     * @return                  the {@link CustomersBean} data stream
      * @throws RuntimeException if input cannot be read.
      */
     protected abstract DataStream<CustomersBean> readCustomersCdcStream(
             StreamExecutionEnvironment env, ParameterTool params) throws RuntimeException;
 
     /**
-     * Method to write {@link EnrichedTransactions} data stream to sink.
-     * 
-     * @param  enrichedTrxStream the {@link EnrichedTransactions} data stream
+     * Method to write {@link EnrichedTransactionsBean} data stream to sink.
+     *
+     * @param  enrichedTrxStream the {@link EnrichedTransactionsBean} data stream
      * @param  params            the parameters from {@link ParameterTool}
      * @throws RuntimeException  if output cannot be written
      */
@@ -61,7 +79,8 @@ public abstract class TransactionsEnrichmentStreamingJob {
             DataStream<EnrichedTransactionsBean> enrichedTrxStream, ParameterTool params) throws RuntimeException;
 
     /**
-     * The core logic and pipeline for enriching {@link Transactions} data stream using data from {@link Customers}.
+     * The core logic and pipeline for enriching {@link TransactionsBean} data stream using data from
+     * {@link CustomersBean}.
      *
      * @param  params           the parameters from {@link ParameterTool}
      * @return                  the Flink {@link StreamExecutionEnvironment} environment
@@ -101,7 +120,7 @@ public abstract class TransactionsEnrichmentStreamingJob {
         conf.setString("state.backend", "filesystem");
         conf.setString("state.checkpoints.dir", checkpointPath);
 
-        if (params.get(ENVIRONMENT) == "development") {
+        if (Objects.equals(params.get(ENVIRONMENT), "development")) {
             env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
         } else {
             env = StreamExecutionEnvironment.getExecutionEnvironment();

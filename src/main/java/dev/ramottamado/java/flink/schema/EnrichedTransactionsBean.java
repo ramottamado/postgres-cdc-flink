@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 Tamado Sitohang <ramot@ramottamado.dev>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package dev.ramottamado.java.flink.schema;
 
 import java.io.Serializable;
@@ -37,7 +53,7 @@ public class EnrichedTransactionsBean implements Serializable {
     private String srcName;
 
     @JsonProperty("dest_name")
-    private String destname;
+    private String destName;
 
     @JsonProperty("trx_timestamp")
     @JsonSerialize(using = TimestampSerializer.class)
@@ -112,12 +128,12 @@ public class EnrichedTransactionsBean implements Serializable {
 
     @JsonProperty("dest_name")
     public String getDestName() {
-        return destname;
+        return destName;
     }
 
     @JsonProperty("dest_name")
     public void setDestName(String destName) {
-        this.destname = destName;
+        this.destName = destName;
     }
 
     @JsonProperty("trx_timestamp")

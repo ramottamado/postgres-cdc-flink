@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 Tamado Sitohang <ramot@ramottamado.dev>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package dev.ramottamado.java.flink.util.jackson.deserializer;
 
 import java.io.IOException;
@@ -20,14 +36,6 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
     /**
      * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
      * {@link java.time.Instant}.
-     */
-    public MicroTimestampDeserializer() {
-        this(null);
-    }
-
-    /**
-     * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
-     * {@link java.time.Instant}.
      *
      * @param vc the value class of serialized data
      */
@@ -37,7 +45,7 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
 
     @Override
     public Instant deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
-        Long timestamp = parser.getLongValue() / 1000000;
+        long timestamp = parser.getLongValue() / 1000000;
 
         try {
             return Instant.ofEpochSecond(timestamp, 0);
