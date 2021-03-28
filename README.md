@@ -1,5 +1,7 @@
 # Enriching Kafka Stream with Another Stream Using Flink
 
+[![codecov](https://codecov.io/gh/ramottamado/postgres-cdc-flink/branch/main/graph/badge.svg?token=ZVUN5AP7WA)](https://codecov.io/gh/ramottamado/postgres-cdc-flink)
+
 ## Environment Setup
 1. Install PostgreSQL 11+
 2. Setup PostgreSQL to allow Debezium to CDC using pgoutput. Reference [here](https://debezium.io/documentation/reference/1.1/connectors/postgresql.html)

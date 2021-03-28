@@ -53,10 +53,6 @@ public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> 
             mapper = new ObjectMapper();
         }
 
-        try {
-            return mapper.treeToValue(value.get("value").get("payload").get("after"), type);
-        } catch (Exception e) {
-            return type.newInstance();
-        }
+        return mapper.treeToValue(value.get("value").get("payload").get("after"), type);
     }
 }
