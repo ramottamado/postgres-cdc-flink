@@ -34,7 +34,7 @@ import dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob;
 public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> {
     private static final long serialVersionUID = 123456672L;
     private final Class<T> type;
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     /**
      * The {@link EnrichedTransactionsToStringMapFunction} implements
@@ -49,10 +49,6 @@ public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> 
 
     @Override
     public T map(ObjectNode value) throws Exception {
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-        }
-
         return mapper.treeToValue(value.get("value").get("payload").get("after"), type);
     }
 }

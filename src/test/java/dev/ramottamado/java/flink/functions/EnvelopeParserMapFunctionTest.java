@@ -25,7 +25,6 @@ public class EnvelopeParserMapFunctionTest {
     @Test
     public void testMap() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-
         expected = createExpectedCustomers();
 
         dummyEnvelope = String.join("\n",

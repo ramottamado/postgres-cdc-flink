@@ -218,6 +218,14 @@ limitations under the License.
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>dev/ramottamado/java/flink/KafkaTransactionsEnrichmentStreamingJob.class</exclude>
+						<exclude>dev/ramottamado/java/flink/util/kafka/KafkaProperties.class</exclude>
+						<exclude>dev/ramottamado/java/flink/util/ParameterUtils.class</exclude>
+						<exclude>dev/ramottamado/java/flink/schema/*.class</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
