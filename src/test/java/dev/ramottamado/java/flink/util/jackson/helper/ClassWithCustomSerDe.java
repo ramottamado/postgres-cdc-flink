@@ -31,6 +31,9 @@ public class ClassWithCustomSerDe {
     @JsonProperty("timestamp")
     private Instant timestamp;
 
+    @JsonProperty("another_timestamp")
+    private Instant anotherTimestamp;
+
     public ClassWithCustomSerDe() {
     }
 
@@ -42,5 +45,15 @@ public class ClassWithCustomSerDe {
     @JsonProperty("timestamp")
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    @JsonProperty("another_timestamp")
+    public void setAnotherTimestamp(Instant anotherTimestamp) {
+        this.anotherTimestamp = anotherTimestamp;
+    }
+
+    @JsonProperty("another_timestamp")
+    public Instant getAnotherTimestamp() {
+        return anotherTimestamp;
     }
 }

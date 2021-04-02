@@ -18,24 +18,48 @@ package dev.ramottamado.java.flink.util.jackson.deserializer;
 
 import java.time.Instant;
 
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonDeserializer;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import dev.ramottamado.java.flink.util.jackson.helper.ClassWithCustomSerDe;
 
 public class MicroTimestampDeserializerTest {
     private Instant timestamp = Instant.parse("2021-03-21T19:00:07.00Z");
-    private String dummyJson = "{\"timestamp\":1616353207000000}";
+    private String dummyJson = "{\"timestamp\":1616353207000000,\"another_timestamp\":1616353207000000}";
     private ObjectMapper mapper = new ObjectMapper();
+    private SimpleModule module;
+    private ClassWithCustomSerDe testClassWithCustomSerDe;
+
+    @Before
+    public void prepareTest() {
+        module = new SimpleModule();
+        JsonDeserializer<Instant> cusDeserializer = new MicroTimestampDeserializer(Instant.class);
+        module.addDeserializer(Instant.class, cusDeserializer);
+        mapper.registerModule(module);
+        testClassWithCustomSerDe = new ClassWithCustomSerDe();
+        testClassWithCustomSerDe.setTimestamp(timestamp);
+        testClassWithCustomSerDe.setAnotherTimestamp(timestamp);
+    }
 
     @Test
     public void testDeserialize() throws Exception {
-        ClassWithCustomSerDe testClassWithCustomSerDe = new ClassWithCustomSerDe();
-        testClassWithCustomSerDe.setTimestamp(timestamp);
-
         ClassWithCustomSerDe out = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
         Assert.assertNotNull(out);
         Assert.assertEquals(testClassWithCustomSerDe.getTimestamp(), out.getTimestamp());
+        Assert.assertEquals(testClassWithCustomSerDe.getAnotherTimestamp(), out.getAnotherTimestamp());
+    }
+
+    @Test
+    public void testDeserializeWithError() throws Exception {
+        dummyJson =
+                "{\"timestamp\":1616353207000000000000000000000000000000000,\"another_timestamp\":1616353207000000000000000000000000000000000}";
+        ClassWithCustomSerDe out = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
+        Assert.assertNotNull(out);
+        Assert.assertNull(out.getTimestamp());
+        Assert.assertNull(out.getAnotherTimestamp());
     }
 }

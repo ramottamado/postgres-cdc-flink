@@ -52,10 +52,9 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
     }
 
     @Override
-    public Instant deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
-        long timestamp = parser.getLongValue() / 1000000;
-
+    public Instant deserialize(JsonParser parser, DeserializationContext ctx) {
         try {
+            long timestamp = parser.getLongValue() / 1000000;
             return Instant.ofEpochSecond(timestamp, 0);
         } catch (Exception e) {
             logger.error("Local date is not valid.", e);
