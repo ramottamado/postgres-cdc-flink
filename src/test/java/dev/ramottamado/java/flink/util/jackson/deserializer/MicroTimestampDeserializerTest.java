@@ -40,6 +40,7 @@ public class MicroTimestampDeserializerTest {
         JsonDeserializer<Instant> cusDeserializer = new MicroTimestampDeserializer(Instant.class);
         module.addDeserializer(Instant.class, cusDeserializer);
         mapper.registerModule(module);
+
         testClassWithCustomSerDe = new ClassWithCustomSerDe();
         testClassWithCustomSerDe.setTimestamp(timestamp);
         testClassWithCustomSerDe.setAnotherTimestamp(timestamp);
@@ -48,6 +49,7 @@ public class MicroTimestampDeserializerTest {
     @Test
     public void testDeserialize() throws Exception {
         ClassWithCustomSerDe out = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
+
         Assert.assertNotNull(out);
         Assert.assertEquals(testClassWithCustomSerDe.getTimestamp(), out.getTimestamp());
         Assert.assertEquals(testClassWithCustomSerDe.getAnotherTimestamp(), out.getAnotherTimestamp());
@@ -57,7 +59,9 @@ public class MicroTimestampDeserializerTest {
     public void testDeserializeWithError() throws Exception {
         dummyJson =
                 "{\"timestamp\":1616353207000000000000000000000000000000000,\"another_timestamp\":1616353207000000000000000000000000000000000}";
+
         ClassWithCustomSerDe out = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
+
         Assert.assertNotNull(out);
         Assert.assertNull(out.getTimestamp());
         Assert.assertNull(out.getAnotherTimestamp());

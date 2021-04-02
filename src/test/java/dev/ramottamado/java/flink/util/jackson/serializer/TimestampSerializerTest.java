@@ -49,6 +49,7 @@ public class TimestampSerializerTest {
     @Test
     public void testSerialize() throws Exception {
         String out = mapper.writeValueAsString(testClass);
+
         Assert.assertNotNull(out);
         Assert.assertEquals(dummyJson, out);
     }
