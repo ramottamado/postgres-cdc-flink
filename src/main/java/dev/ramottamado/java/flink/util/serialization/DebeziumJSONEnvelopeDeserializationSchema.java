@@ -31,7 +31,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
  */
 public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeserializationSchema<T> {
     private static final long serialVersionUID = -91238719810201L;
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     /**
      * The {@link DebeziumJSONEnvelopeDeserializationSchema} describes how to deserialize byte messages from Debezium
@@ -45,10 +45,6 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
 
     @Override
     public T deserialize(byte[] message) throws IOException {
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-        }
-
         ObjectNode node = mapper.createObjectNode();
 
         if (message != null) {

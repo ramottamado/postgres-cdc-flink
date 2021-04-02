@@ -49,7 +49,7 @@ public class EnrichTransactionsWithCustomersJoinFunction
                 TypeInformation.of(CustomersBean.class));
 
         ValueStateDescriptor<TransactionsWithTimestamp> tDescriptor = new ValueStateDescriptor<>(
-                "trWithTimestamp",
+                "trxWithTimestamp",
                 TypeInformation.of(TransactionsWithTimestamp.class));
 
         referenceDataState = getRuntimeContext().getState(cDescriptor);

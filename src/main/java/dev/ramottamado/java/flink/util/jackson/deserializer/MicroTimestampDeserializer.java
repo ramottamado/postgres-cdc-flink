@@ -36,6 +36,14 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
     /**
      * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
      * {@link java.time.Instant}.
+     */
+    public MicroTimestampDeserializer() {
+        super(Instant.class);
+    }
+
+    /**
+     * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
+     * {@link java.time.Instant}.
      *
      * @param vc the value class of serialized data
      */

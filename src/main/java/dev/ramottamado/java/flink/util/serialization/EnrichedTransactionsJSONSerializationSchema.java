@@ -33,7 +33,7 @@ public class EnrichedTransactionsJSONSerializationSchema implements KafkaSeriali
     private final static long serialVersionUID = -102983L;
     private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsJSONSerializationSchema.class);
     private final String topic;
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     /**
      * The {@link EnrichedTransactionsJSONSerializationSchema} describes how to serialize
@@ -49,10 +49,6 @@ public class EnrichedTransactionsJSONSerializationSchema implements KafkaSeriali
     @Override
     public ProducerRecord<byte[], byte[]> serialize(EnrichedTransactionsBean element, Long timestamp) {
         byte[] message = null;
-
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-        }
 
         try {
             message = mapper.writeValueAsBytes(element);
