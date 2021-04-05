@@ -26,6 +26,7 @@ import org.apache.flink.util.Collector;
 import dev.ramottamado.java.flink.schema.CustomersBean;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 import dev.ramottamado.java.flink.schema.TransactionsBean;
+import dev.ramottamado.java.flink.schema.TransactionsWithTimestampBean;
 
 /**
  * The {@link EnrichTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
@@ -35,12 +36,7 @@ public class EnrichTransactionsWithCustomersJoinFunction
         extends KeyedCoProcessFunction<String, TransactionsBean, CustomersBean, EnrichedTransactionsBean> {
     private static final long serialVersionUID = 12319238113L;
     private ValueState<CustomersBean> referenceDataState;
-    private ValueState<TransactionsWithTimestamp> latestTrx;
-
-    private static class TransactionsWithTimestamp {
-        long timestamp;
-        TransactionsBean trx;
-    }
+    private ValueState<TransactionsWithTimestampBean> latestTrx;
 
     @Override
     public void open(Configuration parameters) {
@@ -48,9 +44,9 @@ public class EnrichTransactionsWithCustomersJoinFunction
                 "customers",
                 TypeInformation.of(CustomersBean.class));
 
-        ValueStateDescriptor<TransactionsWithTimestamp> tDescriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<TransactionsWithTimestampBean> tDescriptor = new ValueStateDescriptor<>(
                 "trxWithTimestamp",
-                TypeInformation.of(TransactionsWithTimestamp.class));
+                TypeInformation.of(TransactionsWithTimestampBean.class));
 
         referenceDataState = getRuntimeContext().getState(cDescriptor);
         latestTrx = getRuntimeContext().getState(tDescriptor);
@@ -64,12 +60,12 @@ public class EnrichTransactionsWithCustomersJoinFunction
         if (customers != null) {
             out.collect(joinTrxWithCustomers(value, customers));
         } else {
-            TransactionsWithTimestamp trxWithTimestamp = new TransactionsWithTimestamp();
+            TransactionsWithTimestampBean trxWithTimestamp = new TransactionsWithTimestampBean();
+            trxWithTimestamp.setTimestamp(ctx.timestamp());
+            trxWithTimestamp.setTrx(value);
 
-            trxWithTimestamp.timestamp = ctx.timestamp();
-            trxWithTimestamp.trx = value;
             latestTrx.update(trxWithTimestamp);
-            ctx.timerService().registerProcessingTimeTimer(trxWithTimestamp.timestamp + 5000L);
+            ctx.timerService().registerProcessingTimeTimer(trxWithTimestamp.getTimestamp() + 5000L);
         }
     }
 
@@ -81,17 +77,17 @@ public class EnrichTransactionsWithCustomersJoinFunction
 
     @Override
     public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactionsBean> out) throws Exception {
-        TransactionsWithTimestamp lastTrx = latestTrx.value();
+        TransactionsWithTimestampBean lastTrx = latestTrx.value();
         EnrichedTransactionsBean enrichedTrx = new EnrichedTransactionsBean();
 
         if (referenceDataState.value() != null) {
-            enrichedTrx = joinTrxWithCustomers(lastTrx.trx, referenceDataState.value());
+            enrichedTrx = joinTrxWithCustomers(lastTrx.getTrx(), referenceDataState.value());
         } else {
-            enrichedTrx.setAmount(lastTrx.trx.getAmount());
-            enrichedTrx.setSrcAccount(lastTrx.trx.getSrcAccount());
-            enrichedTrx.setDestAcct(lastTrx.trx.getDestAcct());
-            enrichedTrx.setTrxTimestamp(lastTrx.trx.getTrxTimestamp());
-            enrichedTrx.setTrxType(lastTrx.trx.getTrxType());
+            enrichedTrx.setAmount(lastTrx.getTrx().getAmount());
+            enrichedTrx.setSrcAcct(lastTrx.getTrx().getSrcAcct());
+            enrichedTrx.setDestAcct(lastTrx.getTrx().getDestAcct());
+            enrichedTrx.setTrxTimestamp(lastTrx.getTrx().getTrxTimestamp());
+            enrichedTrx.setTrxType(lastTrx.getTrx().getTrxType());
         }
 
         latestTrx.clear();
@@ -105,16 +101,16 @@ public class EnrichTransactionsWithCustomersJoinFunction
      * @param  cust the customer used to enrich the transaction record
      * @return      the enriched transaction
      */
-    public EnrichedTransactionsBean joinTrxWithCustomers(TransactionsBean trx, CustomersBean cust) {
+    private EnrichedTransactionsBean joinTrxWithCustomers(TransactionsBean trx, CustomersBean cust) {
         EnrichedTransactionsBean enrichedTrx = new EnrichedTransactionsBean();
 
         enrichedTrx.setCif(cust.getCif());
         enrichedTrx.setAmount(trx.getAmount());
-        enrichedTrx.setSrcAccount(trx.getSrcAccount());
+        enrichedTrx.setSrcAcct(trx.getSrcAcct());
         enrichedTrx.setDestAcct(trx.getDestAcct());
         enrichedTrx.setTrxTimestamp(trx.getTrxTimestamp());
         enrichedTrx.setTrxType(trx.getTrxType());
-        enrichedTrx.setSrcName(cust.getFirstName() + " " + cust.getLastName());
+        enrichedTrx.setSrcName((cust.getFirstName() + " " + cust.getLastName()).trim());
 
         return enrichedTrx;
     }

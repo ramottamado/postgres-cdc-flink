@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.ramottamado.java.flink.functions;
+package dev.ramottamado.java.flink.util.serialization;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
@@ -23,8 +23,6 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import dev.ramottamado.java.flink.util.serialization.JSONValueDeserializationSchema;
 
 public class JSONValueDeserializationSchemaTest {
     private JSONValueDeserializationSchema jsonValueDeserializationSchemaTest = new JSONValueDeserializationSchema();
@@ -89,6 +87,6 @@ public class JSONValueDeserializationSchemaTest {
         TypeInformation<ObjectNode> out = jsonValueDeserializationSchemaTest.getProducedType();
 
         Assert.assertNotNull(out);
-        Assert.assertEquals(out, TypeInformation.of(ObjectNode.class));
+        Assert.assertEquals(TypeInformation.of(ObjectNode.class), out);
     }
 }

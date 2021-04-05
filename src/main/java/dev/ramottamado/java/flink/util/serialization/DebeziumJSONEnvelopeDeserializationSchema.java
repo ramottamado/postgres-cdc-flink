@@ -56,11 +56,11 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
                     node.get("value").get("payload").get("after"),
                     super.getProducedType().getTypeClass());
         } catch (Exception e) {
-            try {
-                return super.getProducedType().getTypeClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException e1) {
-                throw new IOException("Error instantiating new class");
-            }
+            node = node.removeAll();
+
+            return mapper.treeToValue(node,
+                    super.getProducedType().getTypeClass());
         }
+
     }
 }

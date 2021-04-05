@@ -25,8 +25,8 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
  * {@link org.apache.flink.api.java.functions.KeySelector} to select {@code destAcct} as the key from
  * {@link EnrichedTransactionsBean}.
  *
- * @deprecated Replaced by {@link EnrichedTransactionsBean#getDestAcct()}
- * @see        EnrichedTransactionsBean#getDestAcct()
+ * @deprecated Replaced by {@link EnrichedTransactionsBean#getDestAcctAsKey()}
+ * @see        EnrichedTransactionsBean#getDestAcctAsKey()
  */
 @Deprecated
 public class DestinationAccountKeySelector implements KeySelector<EnrichedTransactionsBean, String> {

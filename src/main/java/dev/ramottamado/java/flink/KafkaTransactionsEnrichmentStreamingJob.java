@@ -38,7 +38,7 @@ import dev.ramottamado.java.flink.schema.TransactionsBean;
 import dev.ramottamado.java.flink.util.ParameterUtils;
 import dev.ramottamado.java.flink.util.kafka.KafkaProperties;
 import dev.ramottamado.java.flink.util.serialization.DebeziumJSONEnvelopeDeserializationSchema;
-import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsJSONSerializationSchema;
+import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsKafkaSerializationSchema;
 
 /**
  * The class {@link KafkaTransactionsEnrichmentStreamingJob} provides {@link TransactionsEnrichmentStreamingJob}
@@ -53,8 +53,8 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     private final DebeziumJSONEnvelopeDeserializationSchema<CustomersBean> cDeserializationSchema =
             new DebeziumJSONEnvelopeDeserializationSchema<>(CustomersBean.class);
 
-    private final EnrichedTransactionsJSONSerializationSchema etxSerializationSchema =
-            new EnrichedTransactionsJSONSerializationSchema("enriched_transactions");
+    private final EnrichedTransactionsKafkaSerializationSchema etxSerializationSchema =
+            new EnrichedTransactionsKafkaSerializationSchema("enriched_transactions");
 
     @Override
     public final DataStream<TransactionsBean> readTransactionsCdcStream(

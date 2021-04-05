@@ -26,22 +26,23 @@ import org.slf4j.LoggerFactory;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 
 /**
- * The {@link EnrichedTransactionsJSONSerializationSchema} describes how to serialize {@link EnrichedTransactionsBean}
+ * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize {@link EnrichedTransactionsBean}
  * into {@link ProducerRecord} for Apache Kafka.
  */
-public class EnrichedTransactionsJSONSerializationSchema implements KafkaSerializationSchema<EnrichedTransactionsBean> {
+public class EnrichedTransactionsKafkaSerializationSchema
+        implements KafkaSerializationSchema<EnrichedTransactionsBean> {
     private final static long serialVersionUID = -102983L;
-    private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsJSONSerializationSchema.class);
+    private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsKafkaSerializationSchema.class);
     private final String topic;
     private ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * The {@link EnrichedTransactionsJSONSerializationSchema} describes how to serialize
+     * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize
      * {@link EnrichedTransactionsBean} into {@link ProducerRecord} for Apache Kafka.
      *
      * @param topic the Kafka topic to publish the resulting records
      */
-    public EnrichedTransactionsJSONSerializationSchema(String topic) {
+    public EnrichedTransactionsKafkaSerializationSchema(String topic) {
         super();
         this.topic = topic;
     }

@@ -35,7 +35,7 @@ public class TransactionsBean implements Serializable {
     private static final long serialVersionUID = -2001L;
 
     @JsonProperty("src_acct")
-    private String srcAccount;
+    private String srcAcct;
 
     @JsonProperty("dest_acct")
     private String destAcct;
@@ -58,13 +58,13 @@ public class TransactionsBean implements Serializable {
     }
 
     @JsonProperty("src_acct")
-    public String getSrcAccount() {
-        return srcAccount;
+    public String getSrcAcct() {
+        return srcAcct;
     }
 
     @JsonProperty("src_acct")
-    public void setSrcAccount(String srcAccount) {
-        this.srcAccount = srcAccount;
+    public void setSrcAcct(String srcAcct) {
+        this.srcAcct = srcAcct;
     }
 
     @JsonProperty("dest_acct")

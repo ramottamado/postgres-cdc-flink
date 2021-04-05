@@ -67,18 +67,18 @@ public class EnrichedTransactionsBean implements Serializable {
     }
 
     @JsonProperty("src_acct")
-    public String getSrcAccount() {
+    public String getSrcAcct() {
         return srcAcct;
     }
 
     @JsonProperty("src_acct")
-    public void setSrcAccount(String srcAccount) {
-        this.srcAcct = srcAccount;
+    public void setSrcAcct(String srcAcct) {
+        this.srcAcct = srcAcct;
     }
 
     @JsonProperty("dest_acct")
     public String getDestAcct() {
-        return (destAcct != null) ? destAcct : "NULL";
+        return destAcct;
     }
 
     @JsonProperty("dest_acct")
@@ -144,5 +144,10 @@ public class EnrichedTransactionsBean implements Serializable {
     @JsonProperty("trx_timestamp")
     public void setTrxTimestamp(Instant trxTimestamp) {
         this.trxTimestamp = trxTimestamp;
+    }
+
+    @JsonIgnore
+    public String getDestAcctAsKey() {
+        return (destAcct != null) ? destAcct : "NULL";
     }
 }

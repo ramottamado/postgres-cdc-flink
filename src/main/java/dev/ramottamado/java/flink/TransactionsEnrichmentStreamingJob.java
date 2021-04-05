@@ -93,13 +93,13 @@ public abstract class TransactionsEnrichmentStreamingJob {
                 .keyBy(CustomersBean::getAcctNumber);
 
         KeyedStream<TransactionsBean, String> keyedTransactionsStream = readTransactionsCdcStream(env, params)
-                .keyBy(TransactionsBean::getSrcAccount);
+                .keyBy(TransactionsBean::getSrcAcct);
 
         KeyedStream<EnrichedTransactionsBean, String> enrichedTrxStream = keyedTransactionsStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions")
-                .keyBy(EnrichedTransactionsBean::getDestAcct);
+                .keyBy(EnrichedTransactionsBean::getDestAcctAsKey);
 
         SingleOutputStreamOperator<EnrichedTransactionsBean> enrichedTrxStream2 = enrichedTrxStream
                 .connect(keyedCustomersCdcStream)

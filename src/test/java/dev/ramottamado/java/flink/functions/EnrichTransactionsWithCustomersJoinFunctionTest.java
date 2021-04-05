@@ -49,14 +49,14 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
         testTrx = new TransactionsBean();
         testTrx.setAmount(10000.0);
         testTrx.setDestAcct("0002");
-        testTrx.setSrcAccount("0001");
+        testTrx.setSrcAcct("0001");
         testTrx.setTrxTimestamp(Instant.parse("2021-01-01T12:00:00.00Z"));
         testTrx.setTrxType("TRANSFER");
 
         testEnrichedTrx = new EnrichedTransactionsBean();
         testEnrichedTrx.setAmount(10000.0);
         testEnrichedTrx.setDestAcct("0002");
-        testEnrichedTrx.setSrcAccount("0001");
+        testEnrichedTrx.setSrcAcct("0001");
         testEnrichedTrx.setTrxTimestamp(Instant.parse("2021-01-01T12:00:00.00Z"));
         testEnrichedTrx.setTrxType("TRANSFER");
         testEnrichedTrx.setCif("001");
@@ -69,7 +69,7 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                TransactionsBean::getSrcAccount,
+                TransactionsBean::getSrcAcct,
                 CustomersBean::getAcctNumber,
                 Types.STRING);
 
@@ -77,16 +77,13 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
         testHarness.processElement2(testCustomer, 10);
         testHarness.processElement1(testTrx, 10);
 
-
-        // testHarness.setProcessingTime(5011);
-
-        for (StreamRecord<? extends EnrichedTransactionsBean> x : testHarness.extractOutputStreamRecords()) {
-            Assert.assertEquals(x.getValue().getCif(), testEnrichedTrx.getCif());
-            Assert.assertEquals(x.getValue().getDestAcct(), testEnrichedTrx.getDestAcct());
-            Assert.assertEquals(x.getValue().getSrcAccount(), testEnrichedTrx.getSrcAccount());
-            Assert.assertEquals(x.getValue().getSrcName(), testEnrichedTrx.getSrcName());
-            Assert.assertEquals(x.getValue().getTrxType(), testEnrichedTrx.getTrxType());
-            Assert.assertEquals(x.getValue().getAmount(), testEnrichedTrx.getAmount());
+        for (StreamRecord<? extends EnrichedTransactionsBean> etx : testHarness.extractOutputStreamRecords()) {
+            Assert.assertEquals(testEnrichedTrx.getCif(), etx.getValue().getCif());
+            Assert.assertEquals(testEnrichedTrx.getDestAcct(), etx.getValue().getDestAcct());
+            Assert.assertEquals(testEnrichedTrx.getSrcAcct(), etx.getValue().getSrcAcct());
+            Assert.assertEquals(testEnrichedTrx.getSrcName(), etx.getValue().getSrcName());
+            Assert.assertEquals(testEnrichedTrx.getTrxType(), etx.getValue().getTrxType());
+            Assert.assertEquals(testEnrichedTrx.getAmount(), etx.getValue().getAmount());
         }
     }
 
@@ -96,49 +93,46 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                TransactionsBean::getSrcAccount,
+                TransactionsBean::getSrcAcct,
                 CustomersBean::getAcctNumber,
                 Types.STRING);
 
         testHarness.open();
         testHarness.processElement1(testTrx, 10);
         testHarness.processElement2(testCustomer, 10);
-
         testHarness.setProcessingTime(5011);
 
-        for (StreamRecord<? extends EnrichedTransactionsBean> x : testHarness.extractOutputStreamRecords()) {
-            Assert.assertEquals(x.getValue().getCif(), testEnrichedTrx.getCif());
-            Assert.assertEquals(x.getValue().getDestAcct(), testEnrichedTrx.getDestAcct());
-            Assert.assertEquals(x.getValue().getSrcAccount(), testEnrichedTrx.getSrcAccount());
-            Assert.assertEquals(x.getValue().getSrcName(), testEnrichedTrx.getSrcName());
-            Assert.assertEquals(x.getValue().getTrxType(), testEnrichedTrx.getTrxType());
-            Assert.assertEquals(x.getValue().getAmount(), testEnrichedTrx.getAmount());
+        for (StreamRecord<? extends EnrichedTransactionsBean> etx : testHarness.extractOutputStreamRecords()) {
+            Assert.assertEquals(testEnrichedTrx.getCif(), etx.getValue().getCif());
+            Assert.assertEquals(testEnrichedTrx.getDestAcct(), etx.getValue().getDestAcct());
+            Assert.assertEquals(testEnrichedTrx.getSrcAcct(), etx.getValue().getSrcAcct());
+            Assert.assertEquals(testEnrichedTrx.getSrcName(), etx.getValue().getSrcName());
+            Assert.assertEquals(testEnrichedTrx.getTrxType(), etx.getValue().getTrxType());
+            Assert.assertEquals(testEnrichedTrx.getAmount(), etx.getValue().getAmount());
         }
     }
 
     @Test
-    public void testOnTimerWithNullCustomers() throws Exception {
+    public void testOnTimerWithNullCustomer() throws Exception {
         enrichTransactionsWithCustomersJoinFunction = new EnrichTransactionsWithCustomersJoinFunction();
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                TransactionsBean::getSrcAccount,
+                TransactionsBean::getSrcAcct,
                 CustomersBean::getAcctNumber,
                 Types.STRING);
 
         testHarness.open();
         testHarness.processElement1(testTrx, 10);
-        // testHarness.processElement2(testCustomer, 10);
-
         testHarness.setProcessingTime(5011);
 
-        for (StreamRecord<? extends EnrichedTransactionsBean> x : testHarness.extractOutputStreamRecords()) {
-            Assert.assertEquals(x.getValue().getCif(), null);
-            Assert.assertEquals(x.getValue().getDestAcct(), testEnrichedTrx.getDestAcct());
-            Assert.assertEquals(x.getValue().getSrcAccount(), testEnrichedTrx.getSrcAccount());
-            Assert.assertEquals(x.getValue().getSrcName(), null);
-            Assert.assertEquals(x.getValue().getTrxType(), testEnrichedTrx.getTrxType());
-            Assert.assertEquals(x.getValue().getAmount(), testEnrichedTrx.getAmount());
+        for (StreamRecord<? extends EnrichedTransactionsBean> etx : testHarness.extractOutputStreamRecords()) {
+            Assert.assertEquals(null, etx.getValue().getCif());
+            Assert.assertEquals(testEnrichedTrx.getDestAcct(), etx.getValue().getDestAcct());
+            Assert.assertEquals(testEnrichedTrx.getSrcAcct(), etx.getValue().getSrcAcct());
+            Assert.assertEquals(null, etx.getValue().getSrcName());
+            Assert.assertEquals(testEnrichedTrx.getTrxType(), etx.getValue().getTrxType());
+            Assert.assertEquals(testEnrichedTrx.getAmount(), etx.getValue().getAmount());
         }
     }
 }

@@ -222,6 +222,7 @@ limitations under the License.
 					<excludes>
 						<exclude>dev/ramottamado/java/flink/KafkaTransactionsEnrichmentStreamingJob.class</exclude>
 						<exclude>dev/ramottamado/java/flink/util/kafka/KafkaProperties.class</exclude>
+						<exclude>dev/ramottamado/java/flink/util/serialization/EnrichedTransactionsKafkaSerializationSchema.class</exclude>
 						<exclude>dev/ramottamado/java/flink/util/ParameterUtils.class</exclude>
 						<exclude>dev/ramottamado/java/flink/schema/*.class</exclude>
 					</excludes>

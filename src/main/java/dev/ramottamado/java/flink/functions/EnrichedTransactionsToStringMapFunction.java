@@ -33,14 +33,10 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
  */
 public class EnrichedTransactionsToStringMapFunction implements MapFunction<EnrichedTransactionsBean, String> {
     private final static long serialVersionUID = -129393123132L;
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String map(EnrichedTransactionsBean value) {
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-        }
-
         return mapper.valueToTree(value).toPrettyString();
     }
 }

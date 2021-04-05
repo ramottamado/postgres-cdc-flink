@@ -71,7 +71,11 @@ public class CustomersBean implements Serializable {
 
     @JsonProperty("first_name")
     public String getFirstName() {
-        return firstName;
+        if (firstName != null)
+            return firstName;
+        else
+            return "";
+
     }
 
     @JsonProperty("first_name")
@@ -81,7 +85,10 @@ public class CustomersBean implements Serializable {
 
     @JsonProperty("last_name")
     public String getLastName() {
-        return lastName;
+        if (lastName != null)
+            return lastName;
+        else
+            return "";
     }
 
     @JsonProperty("last_name")

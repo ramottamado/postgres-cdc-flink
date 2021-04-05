@@ -27,6 +27,7 @@ import org.apache.flink.util.Collector;
 
 import dev.ramottamado.java.flink.schema.CustomersBean;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsWithTimestampBean;
 
 /**
  * The {@link EnrichEnrichedTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
@@ -36,14 +37,20 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
         extends KeyedCoProcessFunction<String, EnrichedTransactionsBean, CustomersBean, EnrichedTransactionsBean> {
     private static final long serialVersionUID = 12319238113L;
     private ValueState<CustomersBean> referenceDataState;
+    private ValueState<EnrichedTransactionsWithTimestampBean> latestEnrichedTrx;
 
     @Override
     public void open(Configuration parameters) {
-        ValueStateDescriptor<CustomersBean> descriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<CustomersBean> cDescriptor = new ValueStateDescriptor<>(
                 "customers",
                 TypeInformation.of(CustomersBean.class));
 
-        referenceDataState = getRuntimeContext().getState(descriptor);
+        ValueStateDescriptor<EnrichedTransactionsWithTimestampBean> eDescriptor = new ValueStateDescriptor<>(
+                "enrichedTransactions",
+                TypeInformation.of(EnrichedTransactionsWithTimestampBean.class));
+
+        referenceDataState = getRuntimeContext().getState(cDescriptor);
+        latestEnrichedTrx = getRuntimeContext().getState(eDescriptor);
     }
 
     @Override
@@ -51,13 +58,18 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
             throws Exception {
         CustomersBean customersState = referenceDataState.value();
 
-        if (!Objects.equals(ctx.getCurrentKey(), "NULL") && customersState != null) {
+        if (Objects.equals(ctx.getCurrentKey(), "NULL")) {
+            out.collect(value);
+        } else if (customersState != null) {
             value.setDestName(customersState.getFirstName() + " " + customersState.getLastName());
             out.collect(value);
-        } else if (customersState == null) {
-            out.collect(value); // FIXME: use onTimer.
         } else {
-            out.collect(value);
+            EnrichedTransactionsWithTimestampBean etxWwithTimestamp = new EnrichedTransactionsWithTimestampBean();
+            etxWwithTimestamp.setTimestamp(ctx.timestamp());
+            etxWwithTimestamp.setEtx(value);
+
+            latestEnrichedTrx.update(etxWwithTimestamp);
+            ctx.timerService().registerProcessingTimeTimer(etxWwithTimestamp.getTimestamp() + 5000L);
         }
     }
 
@@ -65,5 +77,19 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     public void processElement2(CustomersBean value, Context ctx, Collector<EnrichedTransactionsBean> collector)
             throws Exception {
         referenceDataState.update(value);
+    }
+
+    @Override
+    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactionsBean> out) throws Exception {
+        EnrichedTransactionsWithTimestampBean lastEtx = latestEnrichedTrx.value();
+        CustomersBean cust = referenceDataState.value();
+        EnrichedTransactionsBean etx = lastEtx.getEtx();
+
+        if (cust != null) {
+            etx.setDestName((cust.getFirstName() + " " + cust.getLastName()).trim());
+        }
+
+        latestEnrichedTrx.clear();
+        out.collect(etx);
     }
 }

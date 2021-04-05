@@ -21,8 +21,6 @@ import java.time.Instant;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonParser;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.DeserializationContext;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
     private static final long serialVersionUID = 8178417124781L;
-    private static final Logger logger = LoggerFactory.getLogger(MicroTimestampDeserializer.class);
 
     /**
      * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
@@ -57,8 +54,6 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
 
             return Instant.ofEpochSecond(timestamp, 0);
         } catch (Exception e) {
-            logger.error("Local date is not valid.", e);
-
             return null;
         }
     }
