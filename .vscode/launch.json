@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch TestO",
+            "request": "launch",
+            "mainClass": "dev.ramottamado.java.flink.TestO",
+            "projectName": "flink-java"
+        },
+        {
+            "type": "java",
             "name": "Launch Java Program",
             "request": "launch",
             "mainClass": "dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob",

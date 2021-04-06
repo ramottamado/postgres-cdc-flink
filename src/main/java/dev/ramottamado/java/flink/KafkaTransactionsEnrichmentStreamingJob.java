@@ -16,7 +16,9 @@
 
 package dev.ramottamado.java.flink;
 
+import static dev.ramottamado.java.flink.config.ParameterConfig.CHECKPOINT_PATH;
 import static dev.ramottamado.java.flink.config.ParameterConfig.DEBUG_RESULT_STREAM;
+import static dev.ramottamado.java.flink.config.ParameterConfig.ENVIRONMENT;
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_OFFSET_STRATEGY;
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_SOURCE_TOPIC_1;
 import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_SOURCE_TOPIC_2;
@@ -25,7 +27,10 @@ import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_TARGET_TOP
 import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.runtime.state.StateBackend;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
@@ -57,8 +62,7 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
             new EnrichedTransactionsKafkaSerializationSchema("enriched_transactions");
 
     @Override
-    public final DataStream<TransactionsBean> readTransactionsCdcStream(
-            StreamExecutionEnvironment env, ParameterTool params) throws RuntimeException {
+    public final DataStream<TransactionsBean> readTransactionsCdcStream() throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
         FlinkKafkaConsumer<TransactionsBean> tKafkaConsumer = new FlinkKafkaConsumer<>(
@@ -80,7 +84,7 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     }
 
     @Override
-    public final DataStream<CustomersBean> readCustomersCdcStream(StreamExecutionEnvironment env, ParameterTool params)
+    public final DataStream<CustomersBean> readCustomersCdcStream()
             throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
@@ -101,8 +105,8 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     }
 
     @Override
-    public final void writeEnrichedTransactionsOutput(
-            DataStream<EnrichedTransactionsBean> enrichedTrxStream, ParameterTool params) throws RuntimeException {
+    public final void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactionsBean> enrichedTrxStream)
+            throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
         FlinkKafkaProducer<EnrichedTransactionsBean> etxKafkaProducer = new FlinkKafkaProducer<>(
@@ -117,6 +121,29 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
         enrichedTrxStream.addSink(etxKafkaProducer);
     }
 
+    @Override
+    public final StreamExecutionEnvironment createExecutionEnvironment() throws RuntimeException {
+        String checkpointPath = params.getRequired(CHECKPOINT_PATH);
+        StateBackend stateBackend = new FsStateBackend(checkpointPath);
+        Configuration conf = new Configuration();
+
+        conf.setString("state.backend", "filesystem");
+        conf.setString("state.checkpoints.dir", checkpointPath);
+
+        if (Objects.equals(params.get(ENVIRONMENT), "development")) {
+            env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(conf);
+        } else {
+            env = StreamExecutionEnvironment.getExecutionEnvironment();
+            env.setStateBackend(stateBackend);
+        }
+
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.setParallelism(1);
+        env.enableCheckpointing(10000L);
+
+        return env;
+    }
+
     /**
      * Main method to run the application.
      *
@@ -124,10 +151,10 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
      * @throws Exception if some errors happened
      */
     public static void main(String[] args) throws Exception {
-        ParameterTool params = ParameterUtils.parseArgs(args);
+        params = ParameterUtils.parseArgs(args);
 
         new KafkaTransactionsEnrichmentStreamingJob()
-                .createApplicationPipeline(params)
+                .createApplicationPipeline()
                 .execute("Kafka Transactions Stream Enrichment");
     }
 }
