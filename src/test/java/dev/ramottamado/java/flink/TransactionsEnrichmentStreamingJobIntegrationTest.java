@@ -25,14 +25,15 @@ import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.AssignerWithPunctuatedWatermarks;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import dev.ramottamado.java.flink.functions.helper.TestSourceFunction;
+import dev.ramottamado.java.flink.functions.helper.TestTimestampAssigner;
 import dev.ramottamado.java.flink.schema.CustomersBean;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 import dev.ramottamado.java.flink.schema.TransactionsBean;
@@ -51,7 +52,7 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
                             .setNumberTaskManagers(1)
                             .build());
 
-    private static class CollectSink implements SinkFunction<EnrichedTransactionsBean> {
+    public static class CollectSink implements SinkFunction<EnrichedTransactionsBean> {
         public static final long serialVersionUID = 1328490872834124987L;
 
         public static final List<EnrichedTransactionsBean> values = Collections.synchronizedList(new ArrayList<>());
@@ -62,23 +63,9 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
         }
     }
 
-    public class TestTimestampAssigner<T> implements AssignerWithPunctuatedWatermarks<T> {
-        private static final long serialVersionUID = 5737593418503255204L;
-
-        @Override
-        public long extractTimestamp(T element, long previousElementTimestamp) {
-            return System.currentTimeMillis();
-        }
-
-        @Override
-        public Watermark checkAndGetNextWatermark(T lastElement, long extractedTimestamp) {
-            return new Watermark(extractedTimestamp);
-        }
-    }
-
-    private class TestTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
-        public List<CustomersBean> customersBeans;
-        public List<TransactionsBean> transactionsBeans;
+    public class TestTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
+        private List<CustomersBean> customersBeans;
+        private List<TransactionsBean> transactionsBeans;
 
         public TestTransactionsEnrichmentStreamingJob(List<CustomersBean> customersBeans,
                 List<TransactionsBean> transactionsBeans) {
@@ -96,7 +83,7 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
         @Override
         public DataStream<CustomersBean> readCustomersCdcStream() {
             DataStream<CustomersBean> cStream = env
-                    .fromCollection(customersBeans)
+                    .addSource(new TestSourceFunction<CustomersBean>(customersBeans, CustomersBean.class))
                     .assignTimestampsAndWatermarks(new TestTimestampAssigner<CustomersBean>());
 
             return cStream;
@@ -105,7 +92,7 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
         @Override
         public DataStream<TransactionsBean> readTransactionsCdcStream() {
             DataStream<TransactionsBean> tStream = env
-                    .fromCollection(transactionsBeans)
+                    .addSource(new TestSourceFunction<TransactionsBean>(transactionsBeans, TransactionsBean.class))
                     .assignTimestampsAndWatermarks(new TestTimestampAssigner<TransactionsBean>());
 
             return tStream;
@@ -167,6 +154,9 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
                 .createApplicationPipeline();
 
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.setParallelism(2);
         env.execute();
+
+        Assert.assertTrue(CollectSink.values.contains(etx));
     }
 }
