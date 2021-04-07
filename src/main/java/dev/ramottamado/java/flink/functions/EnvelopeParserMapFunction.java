@@ -17,7 +17,6 @@
 package dev.ramottamado.java.flink.functions;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -29,12 +28,12 @@ import dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob;
  * JSON envelope into POJO.
  *
  * @param <T> the type of deserialized POJO
- * @see       KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream,ParameterTool)
+ * @see       KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
  */
 public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> {
     private static final long serialVersionUID = 123456672L;
     private final Class<T> type;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * The {@link EnrichedTransactionsToStringMapFunction} implements

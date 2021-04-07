@@ -28,16 +28,16 @@ import org.junit.Test;
 import dev.ramottamado.java.flink.util.jackson.helper.ClassWithCustomSerDe;
 
 public class TimestampSerializerTest {
-    private Instant timestamp = Instant.parse("2021-03-21T19:00:07.00Z");
-    private String dummyJson = "{\"timestamp\":\"2021-03-21 19:00:07\",\"another_timestamp\":\"2021-03-21 19:00:07\"}";
-    private ObjectMapper mapper = new ObjectMapper();
-    private SimpleModule module;
+    private final Instant timestamp = Instant.parse("2021-03-21T19:00:07.00Z");
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final String dummyJson = "{\"timestamp\":\"2021-03-21 19:00:07\",\"another_timestamp\":\"2021-03-21 19:00:07\"}";
     private ClassWithCustomSerDe testClass;
 
     @Before
     public void prepareTest() {
-        module = new SimpleModule();
         JsonSerializer<Instant> cusSerializer = new TimestampSerializer(Instant.class);
+
+        SimpleModule module = new SimpleModule();
         module.addSerializer(Instant.class, cusSerializer);
         mapper.registerModule(module);
 
@@ -49,6 +49,21 @@ public class TimestampSerializerTest {
     @Test
     public void testSerialize() throws Exception {
         String actual = mapper.writeValueAsString(testClass);
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(dummyJson, actual);
+    }
+
+    @Test
+    public void testSerializeWithEmptyConstructor() throws Exception {
+        ObjectMapper newMapper = new ObjectMapper();
+        JsonSerializer<Instant> cusSerializer = new TimestampSerializer();
+
+        SimpleModule newModule = new SimpleModule();
+        newModule.addSerializer(Instant.class, cusSerializer);
+        newMapper.registerModule(newModule);
+
+        String actual = newMapper.writeValueAsString(testClass);
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(dummyJson, actual);

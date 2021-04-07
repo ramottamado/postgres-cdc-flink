@@ -64,12 +64,12 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
             value.setDestName(customersState.getFirstName() + " " + customersState.getLastName());
             out.collect(value);
         } else {
-            EnrichedTransactionsWithTimestampBean etxWwithTimestamp = new EnrichedTransactionsWithTimestampBean();
-            etxWwithTimestamp.setTimestamp(ctx.timestamp());
-            etxWwithTimestamp.setEtx(value);
+            EnrichedTransactionsWithTimestampBean etxWithTimestamp = new EnrichedTransactionsWithTimestampBean();
+            etxWithTimestamp.setTimestamp(ctx.timestamp());
+            etxWithTimestamp.setEtx(value);
 
-            latestEnrichedTrx.update(etxWwithTimestamp);
-            ctx.timerService().registerProcessingTimeTimer(etxWwithTimestamp.getTimestamp() + 5000L);
+            latestEnrichedTrx.update(etxWithTimestamp);
+            ctx.timerService().registerProcessingTimeTimer(etxWithTimestamp.getTimestamp() + 5000L);
         }
     }
 

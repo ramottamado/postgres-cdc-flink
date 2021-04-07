@@ -54,18 +54,17 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
 
     public static class CollectSink implements SinkFunction<EnrichedTransactionsBean> {
         public static final long serialVersionUID = 1328490872834124987L;
-
         public static final List<EnrichedTransactionsBean> values = Collections.synchronizedList(new ArrayList<>());
 
         @Override
-        public void invoke(EnrichedTransactionsBean value) throws Exception {
+        public void invoke(EnrichedTransactionsBean value) {
             values.add(value);
         }
     }
 
-    public class TestTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
-        private List<CustomersBean> customersBeans;
-        private List<TransactionsBean> transactionsBeans;
+    public static class TestTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
+        private final List<CustomersBean> customersBeans;
+        private final List<TransactionsBean> transactionsBeans;
 
         public TestTransactionsEnrichmentStreamingJob(List<CustomersBean> customersBeans,
                 List<TransactionsBean> transactionsBeans) {
@@ -75,27 +74,20 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
 
         @Override
         public StreamExecutionEnvironment createExecutionEnvironment() {
-            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
-            return env;
+            return StreamExecutionEnvironment.getExecutionEnvironment();
         }
 
         @Override
         public DataStream<CustomersBean> readCustomersCdcStream() {
-            DataStream<CustomersBean> cStream = env
-                    .addSource(new TestSourceFunction<CustomersBean>(customersBeans, CustomersBean.class))
-                    .assignTimestampsAndWatermarks(new TestTimestampAssigner<CustomersBean>());
-
-            return cStream;
+            return env.addSource(new TestSourceFunction<>(customersBeans, CustomersBean.class))
+                    .assignTimestampsAndWatermarks(new TestTimestampAssigner<>());
         }
 
         @Override
         public DataStream<TransactionsBean> readTransactionsCdcStream() {
-            DataStream<TransactionsBean> tStream = env
-                    .addSource(new TestSourceFunction<TransactionsBean>(transactionsBeans, TransactionsBean.class))
-                    .assignTimestampsAndWatermarks(new TestTimestampAssigner<TransactionsBean>());
-
-            return tStream;
+            return env
+                    .addSource(new TestSourceFunction<>(transactionsBeans, TransactionsBean.class))
+                    .assignTimestampsAndWatermarks(new TestTimestampAssigner<>());
         }
 
         @Override

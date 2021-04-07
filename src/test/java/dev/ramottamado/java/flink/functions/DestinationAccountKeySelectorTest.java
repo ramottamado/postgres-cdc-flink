@@ -44,7 +44,7 @@ public class DestinationAccountKeySelectorTest {
     }
 
     @Test
-    public void testGetKey() throws Exception {
+    public void testGetKey() {
         String key = selector.getKey(etx);
 
         Assert.assertNotNull(key);
@@ -52,7 +52,7 @@ public class DestinationAccountKeySelectorTest {
     }
 
     @Test
-    public void testGetNullKey() throws Exception {
+    public void testGetNullKey() {
         etx.setDestAcct(null);
         String actual = selector.getKey(etx);
 

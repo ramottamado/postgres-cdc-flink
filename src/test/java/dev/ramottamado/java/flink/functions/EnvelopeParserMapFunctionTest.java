@@ -25,7 +25,7 @@ import org.junit.Test;
 import dev.ramottamado.java.flink.schema.CustomersBean;
 
 public class EnvelopeParserMapFunctionTest {
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
     private static String dummyEnvelope;
     private static CustomersBean expected;
 

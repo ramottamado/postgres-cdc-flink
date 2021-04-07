@@ -33,8 +33,8 @@ public class EnrichedTransactionsKafkaSerializationSchema
         implements KafkaSerializationSchema<EnrichedTransactionsBean> {
     private final static long serialVersionUID = -102983L;
     private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsKafkaSerializationSchema.class);
+    private final ObjectMapper mapper = new ObjectMapper();
     private final String topic;
-    private ObjectMapper mapper = new ObjectMapper();
 
     /**
      * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize

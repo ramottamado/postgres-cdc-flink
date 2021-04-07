@@ -69,7 +69,7 @@ public abstract class TransactionsEnrichmentStreamingJob {
      * Method to get {@link StreamExecutionEnvironment}.
      *
      * @return                  the {@link StreamExecutionEnvironment} to run the pipeline
-     * @throws RuntimeException
+     * @throws RuntimeException if something wrong happened
      */
     protected abstract StreamExecutionEnvironment createExecutionEnvironment()
             throws RuntimeException;

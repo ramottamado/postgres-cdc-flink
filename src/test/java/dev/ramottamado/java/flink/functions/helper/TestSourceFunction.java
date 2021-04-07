@@ -26,7 +26,7 @@ public class TestSourceFunction<T> implements ParallelSourceFunction<T>, ResultT
     private static final long serialVersionUID = -7782697375127418568L;
     private volatile boolean isRunning = true;
     private final Class<T> type;
-    private List<T> sources;
+    private final List<T> sources;
 
     public TestSourceFunction(List<T> sources, Class<T> type) {
         this.sources = sources;

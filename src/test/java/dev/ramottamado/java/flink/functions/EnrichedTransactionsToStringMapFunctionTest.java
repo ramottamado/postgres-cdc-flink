@@ -26,10 +26,9 @@ import org.junit.Test;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 
 public class EnrichedTransactionsToStringMapFunctionTest {
-    private EnrichedTransactionsToStringMapFunction etxMapper;
+    private final ObjectMapper mapper = new ObjectMapper();
     private EnrichedTransactionsBean etx;
     private String expected;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void prepareTest() throws Exception {
@@ -47,8 +46,8 @@ public class EnrichedTransactionsToStringMapFunctionTest {
     }
 
     @Test
-    public void testMap() throws Exception {
-        etxMapper = new EnrichedTransactionsToStringMapFunction();
+    public void testMap() {
+        EnrichedTransactionsToStringMapFunction etxMapper = new EnrichedTransactionsToStringMapFunction();
 
         String actual = etxMapper.map(etx);
 

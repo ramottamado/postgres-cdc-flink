@@ -10,11 +10,6 @@ public class EnrichedTransactionsWithTimestampBean implements Serializable {
     public EnrichedTransactionsWithTimestampBean() {
     }
 
-    public EnrichedTransactionsWithTimestampBean(long timestamp, EnrichedTransactionsBean etx) {
-        this.timestamp = timestamp;
-        this.etx = etx;
-    }
-
     public long getTimestamp() {
         return timestamp;
     }

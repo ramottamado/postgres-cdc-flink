@@ -75,7 +75,6 @@ public class CustomersBean implements Serializable {
             return firstName;
         else
             return "";
-
     }
 
     @JsonProperty("first_name")

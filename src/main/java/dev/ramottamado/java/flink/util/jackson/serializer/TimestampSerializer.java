@@ -32,7 +32,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ser.std.S
  */
 public class TimestampSerializer extends StdSerializer<Instant> {
     private static final long serialVersionUID = 123718191L;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Z"));
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Z"));
 
     /**
      * The {@link TimestampSerializer} allows for serializing {@link java.time.Instant}

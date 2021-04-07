@@ -31,7 +31,6 @@ import dev.ramottamado.java.flink.schema.CustomersBean;
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 
 public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
-    private EnrichEnrichedTransactionsWithCustomersJoinFunction enrichEnrichedTransactionsWithCustomersJoinFunction;
     private KeyedTwoInputStreamOperatorTestHarness<String, EnrichedTransactionsBean, CustomersBean, EnrichedTransactionsBean> testHarness;
     private CustomersBean testCustomer;
     private EnrichedTransactionsBean testEnrichedTrx;
@@ -65,7 +64,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
         testEnrichedTrxResult.setSrcName("Tamado Sitohang");
         testEnrichedTrxResult.setDestName("Kamal Rasyid");
 
-        enrichEnrichedTransactionsWithCustomersJoinFunction = new EnrichEnrichedTransactionsWithCustomersJoinFunction();
+        EnrichEnrichedTransactionsWithCustomersJoinFunction enrichEnrichedTransactionsWithCustomersJoinFunction = new EnrichEnrichedTransactionsWithCustomersJoinFunction();
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichEnrichedTransactionsWithCustomersJoinFunction),

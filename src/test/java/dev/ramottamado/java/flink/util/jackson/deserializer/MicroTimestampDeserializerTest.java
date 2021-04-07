@@ -28,16 +28,16 @@ import org.junit.Test;
 import dev.ramottamado.java.flink.util.jackson.helper.ClassWithCustomSerDe;
 
 public class MicroTimestampDeserializerTest {
-    private Instant timestamp = Instant.parse("2021-03-21T19:00:07.00Z");
+    private final Instant timestamp = Instant.parse("2021-03-21T19:00:07.00Z");
+    private final ObjectMapper mapper = new ObjectMapper();
     private String dummyJson = "{\"timestamp\":1616353207000000,\"another_timestamp\":1616353207000000}";
-    private ObjectMapper mapper = new ObjectMapper();
-    private SimpleModule module;
     private ClassWithCustomSerDe expected;
 
     @Before
     public void prepareTest() {
-        module = new SimpleModule();
         JsonDeserializer<Instant> cusDeserializer = new MicroTimestampDeserializer(Instant.class);
+
+        SimpleModule module = new SimpleModule();
         module.addDeserializer(Instant.class, cusDeserializer);
         mapper.registerModule(module);
 
@@ -52,6 +52,21 @@ public class MicroTimestampDeserializerTest {
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testDeserializeWithEmptyConstructor() throws Exception {
+        JsonDeserializer<Instant> cusDeserializer = new MicroTimestampDeserializer();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        SimpleModule newModule = new SimpleModule();
+        newModule.addDeserializer(Instant.class, cusDeserializer);
+        newMapper.registerModule(newModule);
+
+        ClassWithCustomSerDe actual = newMapper.readValue(dummyJson, ClassWithCustomSerDe.class);
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected,actual);
     }
 
     @Test

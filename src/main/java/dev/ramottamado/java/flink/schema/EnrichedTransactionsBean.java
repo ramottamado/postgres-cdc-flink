@@ -160,13 +160,14 @@ public class EnrichedTransactionsBean implements Serializable {
             EnrichedTransactionsBean that = (EnrichedTransactionsBean) o;
 
             return ((this.amount == null ? that.getAmount() == null : this.amount.equals(that.getAmount())) &&
+                    (this.cif == null ? that.getCif() == null : this.cif.equals(that.getCif())) &&
                     (this.destAcct == null ? that.getDestAcct() == null : this.destAcct.equals(that.getDestAcct())) &&
+                    (this.destName == null ? that.getDestName() == null : this.destName.equals(that.getDestName())) &&
                     (this.srcAcct == null ? that.getSrcAcct() == null : this.srcAcct.equals(that.getSrcAcct())) &&
+                    (this.srcName == null ? that.getSrcName() == null : this.srcName.equals(that.getSrcName())) &&
                     (this.trxTimestamp == null ? that.getTrxTimestamp() == null
                             : this.trxTimestamp.equals(that.getTrxTimestamp()))
-                    && (this.trxType == null ? that.getTrxType() == null : this.trxType.equals(that.getTrxType())) &&
-                    (this.destName == null ? that.getDestName() == null : this.destName.equals(that.getDestName())) &&
-                    (this.srcName == null ? that.getSrcName() == null : this.srcName.equals(that.getSrcName())));
+                    && (this.trxType == null ? that.getTrxType() == null : this.trxType.equals(that.getTrxType())));
         }
 
         return false;

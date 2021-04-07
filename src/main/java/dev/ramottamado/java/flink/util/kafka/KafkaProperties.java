@@ -34,10 +34,10 @@ public class KafkaProperties {
      *
      * @param  params           the parameters inside {@link ParameterTool}
      * @return                  the properties for Kafka consumer to use
-     * @throws RuntimeException if {@value dev.ramottamado.java.flink.config.ParameterConfig#KAFKA_BOOTSTRAP_SERVER} is
+     * @throws RuntimeException if {@link dev.ramottamado.java.flink.config.ParameterConfig#KAFKA_BOOTSTRAP_SERVER} is
      *                          not set
      */
-    public static final Properties getProperties(ParameterTool params) throws RuntimeException {
+    public static Properties getProperties(ParameterTool params) throws RuntimeException {
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", params.getRequired(KAFKA_BOOTSTRAP_SERVER));
         properties.setProperty("group.id", params.get(KAFKA_CONSUMER_GROUP_ID, "flink-cdc-consumer"));

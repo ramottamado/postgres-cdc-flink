@@ -27,6 +27,7 @@ import static dev.ramottamado.java.flink.config.ParameterConfig.KAFKA_TARGET_TOP
 import java.util.Objects;
 import java.util.Properties;
 
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
@@ -61,6 +62,18 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     private final EnrichedTransactionsKafkaSerializationSchema etxSerializationSchema =
             new EnrichedTransactionsKafkaSerializationSchema("enriched_transactions");
 
+    private void setFlinkKafkaConsumerOffsetStrategy(ParameterTool params, FlinkKafkaConsumer<?> kafkaConsumer) {
+        String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
+
+        if (Objects.equals(kafkaOffsetStrategy, "earliest")) {
+            kafkaConsumer.setStartFromEarliest();
+        } else if (Objects.equals(kafkaOffsetStrategy, "latest")) {
+            kafkaConsumer.setStartFromLatest();
+        } else {
+            kafkaConsumer.setStartFromGroupOffsets();
+        }
+    }
+
     @Override
     public final DataStream<TransactionsBean> readTransactionsCdcStream() throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
@@ -70,15 +83,7 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
                 tDeserializationSchema,
                 properties);
 
-        String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
-
-        if (Objects.equals(kafkaOffsetStrategy, "earliest")) {
-            tKafkaConsumer.setStartFromEarliest();
-        } else if (Objects.equals(kafkaOffsetStrategy, "latest")) {
-            tKafkaConsumer.setStartFromLatest();
-        } else {
-            tKafkaConsumer.setStartFromGroupOffsets();
-        }
+        setFlinkKafkaConsumerOffsetStrategy(params, tKafkaConsumer);
 
         return env.addSource(tKafkaConsumer);
     }
@@ -91,15 +96,7 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
         FlinkKafkaConsumer<CustomersBean> cKafkaConsumer =
                 new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties);
 
-        String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
-
-        if (Objects.equals(kafkaOffsetStrategy, "earliest")) {
-            cKafkaConsumer.setStartFromEarliest();
-        } else if (Objects.equals(kafkaOffsetStrategy, "latest")) {
-            cKafkaConsumer.setStartFromLatest();
-        } else {
-            cKafkaConsumer.setStartFromGroupOffsets();
-        }
+        setFlinkKafkaConsumerOffsetStrategy(params, cKafkaConsumer);
 
         return env.addSource(cKafkaConsumer);
     }

@@ -10,11 +10,6 @@ public class TransactionsWithTimestampBean implements Serializable {
     public TransactionsWithTimestampBean() {
     }
 
-    public TransactionsWithTimestampBean(long timestamp, TransactionsBean trx) {
-        this.timestamp = timestamp;
-        this.trx = trx;
-    }
-
     public long getTimestamp() {
         return timestamp;
     }
