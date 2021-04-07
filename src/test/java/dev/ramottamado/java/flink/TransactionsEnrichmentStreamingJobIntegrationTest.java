@@ -29,7 +29,6 @@ import org.apache.flink.streaming.api.functions.AssignerWithPunctuatedWatermarks
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
                             .build());
 
     private static class CollectSink implements SinkFunction<EnrichedTransactionsBean> {
-        public static final long serialVersionUID = 0L;
+        public static final long serialVersionUID = 1328490872834124987L;
 
         public static final List<EnrichedTransactionsBean> values = Collections.synchronizedList(new ArrayList<>());
 
@@ -78,20 +77,18 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
     }
 
     private class TestTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
-        public CustomersBean cust1;
-        public CustomersBean cust2;
-        public TransactionsBean trx;
+        public List<CustomersBean> customersBeans;
+        public List<TransactionsBean> transactionsBeans;
 
-        TestTransactionsEnrichmentStreamingJob(CustomersBean cust1, CustomersBean cust2, TransactionsBean trx) {
-            this.cust1 = cust1;
-            this.cust2 = cust2;
-            this.trx = trx;
+        public TestTransactionsEnrichmentStreamingJob(List<CustomersBean> customersBeans,
+                List<TransactionsBean> transactionsBeans) {
+            this.customersBeans = customersBeans;
+            this.transactionsBeans = transactionsBeans;
         }
 
         @Override
         public StreamExecutionEnvironment createExecutionEnvironment() {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-            env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
             return env;
         }
@@ -99,7 +96,7 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
         @Override
         public DataStream<CustomersBean> readCustomersCdcStream() {
             DataStream<CustomersBean> cStream = env
-                    .fromElements(cust1, cust2)
+                    .fromCollection(customersBeans)
                     .assignTimestampsAndWatermarks(new TestTimestampAssigner<CustomersBean>());
 
             return cStream;
@@ -108,7 +105,7 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
         @Override
         public DataStream<TransactionsBean> readTransactionsCdcStream() {
             DataStream<TransactionsBean> tStream = env
-                    .fromElements(trx)
+                    .fromCollection(transactionsBeans)
                     .assignTimestampsAndWatermarks(new TestTimestampAssigner<TransactionsBean>());
 
             return tStream;
@@ -159,16 +156,17 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
     public void testCreateApplicationPipeline() throws Exception {
         CollectSink.values.clear();
 
-        StreamExecutionEnvironment env = new TestTransactionsEnrichmentStreamingJob(cust1, cust2, trx)
+        List<CustomersBean> customersBeans = new ArrayList<>();
+        customersBeans.add(cust1);
+        customersBeans.add(cust2);
+
+        List<TransactionsBean> transactionsBeans = new ArrayList<>();
+        transactionsBeans.add(trx);
+
+        StreamExecutionEnvironment env = new TestTransactionsEnrichmentStreamingJob(customersBeans, transactionsBeans)
                 .createApplicationPipeline();
 
-
-        env.setParallelism(2);
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.execute();
-
-        for (EnrichedTransactionsBean x : CollectSink.values) {
-            Assert.assertNotNull(x);
-            Assert.assertEquals(etx.getCif(), x.getCif());
-        }
     }
 }

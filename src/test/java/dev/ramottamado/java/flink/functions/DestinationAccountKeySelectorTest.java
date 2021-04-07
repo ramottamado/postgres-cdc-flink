@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 
+@SuppressWarnings("deprecation")
 public class DestinationAccountKeySelectorTest {
     private EnrichedTransactionsBean etx;
     private DestinationAccountKeySelector selector;
@@ -53,9 +54,9 @@ public class DestinationAccountKeySelectorTest {
     @Test
     public void testGetNullKey() throws Exception {
         etx.setDestAcct(null);
-        String key = selector.getKey(etx);
+        String actual = selector.getKey(etx);
 
-        Assert.assertNotNull(key);
-        Assert.assertEquals("NULL", key);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals("NULL", actual);
     }
 }

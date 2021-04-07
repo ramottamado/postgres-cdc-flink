@@ -65,13 +65,8 @@ public class EnvelopeParserMapFunctionTest {
 
         EnvelopeParserMapFunction<CustomersBean> customersEnvelopeParserMapFunction =
                 new EnvelopeParserMapFunction<>(CustomersBean.class);
-        CustomersBean out = customersEnvelopeParserMapFunction.map(dummyObjectNode);
+        CustomersBean actual = customersEnvelopeParserMapFunction.map(dummyObjectNode);
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(expected.getAcctNumber(), out.getAcctNumber());
-        Assert.assertEquals(expected.getCif(), out.getCif());
-        Assert.assertEquals(expected.getCity(), out.getCity());
-        Assert.assertEquals(expected.getFirstName(), out.getFirstName());
-        Assert.assertEquals(expected.getLastName(), out.getLastName());
+        Assert.assertEquals(expected, actual);
     }
 }

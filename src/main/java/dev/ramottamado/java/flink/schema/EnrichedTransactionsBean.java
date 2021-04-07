@@ -150,4 +150,25 @@ public class EnrichedTransactionsBean implements Serializable {
     public String getDestAcctAsKey() {
         return (destAcct != null) ? destAcct : "NULL";
     }
+
+    @JsonIgnore
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o != null && getClass() == o.getClass()) {
+            EnrichedTransactionsBean that = (EnrichedTransactionsBean) o;
+
+            return ((this.amount == null ? that.getAmount() == null : this.amount.equals(that.getAmount())) &&
+                    (this.destAcct == null ? that.getDestAcct() == null : this.destAcct.equals(that.getDestAcct())) &&
+                    (this.srcAcct == null ? that.getSrcAcct() == null : this.srcAcct.equals(that.getSrcAcct())) &&
+                    (this.trxTimestamp == null ? that.getTrxTimestamp() == null
+                            : this.trxTimestamp.equals(that.getTrxTimestamp()))
+                    && (this.trxType == null ? that.getTrxType() == null : this.trxType.equals(that.getTrxType())) &&
+                    (this.destName == null ? that.getDestName() == null : this.destName.equals(that.getDestName())) &&
+                    (this.srcName == null ? that.getSrcName() == null : this.srcName.equals(that.getSrcName())));
+        }
+
+        return false;
+    }
 }

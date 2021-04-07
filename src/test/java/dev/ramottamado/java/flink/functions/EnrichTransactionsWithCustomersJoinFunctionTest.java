@@ -17,12 +17,13 @@
 package dev.ramottamado.java.flink.functions;
 
 import java.time.Instant;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.streaming.api.operators.co.KeyedCoProcessOperator;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.KeyedTwoInputStreamOperatorTestHarness;
-import org.junit.Assert;
+import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +39,7 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
     private EnrichedTransactionsBean testEnrichedTrx;
 
     @Before
-    public void prepareTest() {
+    public void prepareTest() throws Exception {
         testCustomer = new CustomersBean();
         testCustomer.setAcctNumber("0001");
         testCustomer.setCif("001");
@@ -61,78 +62,57 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
         testEnrichedTrx.setTrxType("TRANSFER");
         testEnrichedTrx.setCif("001");
         testEnrichedTrx.setSrcName("Tamado Sitohang");
+
+        enrichTransactionsWithCustomersJoinFunction = new EnrichTransactionsWithCustomersJoinFunction();
+
+        testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
+                new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
+                TransactionsBean::getSrcAcct,
+                CustomersBean::getAcctNumber,
+                Types.STRING);
+
+        testHarness.open();
     }
 
     @Test
     public void testProcessElement() throws Exception {
-        enrichTransactionsWithCustomersJoinFunction = new EnrichTransactionsWithCustomersJoinFunction();
-
-        testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
-                new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                TransactionsBean::getSrcAcct,
-                CustomersBean::getAcctNumber,
-                Types.STRING);
-
-        testHarness.open();
         testHarness.processElement2(testCustomer, 10);
         testHarness.processElement1(testTrx, 10);
 
-        for (StreamRecord<? extends EnrichedTransactionsBean> etx : testHarness.extractOutputStreamRecords()) {
-            Assert.assertEquals(testEnrichedTrx.getCif(), etx.getValue().getCif());
-            Assert.assertEquals(testEnrichedTrx.getDestAcct(), etx.getValue().getDestAcct());
-            Assert.assertEquals(testEnrichedTrx.getSrcAcct(), etx.getValue().getSrcAcct());
-            Assert.assertEquals(testEnrichedTrx.getSrcName(), etx.getValue().getSrcName());
-            Assert.assertEquals(testEnrichedTrx.getTrxType(), etx.getValue().getTrxType());
-            Assert.assertEquals(testEnrichedTrx.getAmount(), etx.getValue().getAmount());
-        }
+        ConcurrentLinkedQueue<Object> expected = new ConcurrentLinkedQueue<>();
+        expected.add(new StreamRecord<>(testEnrichedTrx, 10));
+
+        ConcurrentLinkedQueue<Object> actual = testHarness.getOutput();
+
+        TestHarnessUtil.assertOutputEquals("Output not as expected.", expected, actual);
     }
 
     @Test
     public void testOnTimer() throws Exception {
-        enrichTransactionsWithCustomersJoinFunction = new EnrichTransactionsWithCustomersJoinFunction();
-
-        testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
-                new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                TransactionsBean::getSrcAcct,
-                CustomersBean::getAcctNumber,
-                Types.STRING);
-
-        testHarness.open();
         testHarness.processElement1(testTrx, 10);
         testHarness.processElement2(testCustomer, 10);
         testHarness.setProcessingTime(5011);
 
-        for (StreamRecord<? extends EnrichedTransactionsBean> etx : testHarness.extractOutputStreamRecords()) {
-            Assert.assertEquals(testEnrichedTrx.getCif(), etx.getValue().getCif());
-            Assert.assertEquals(testEnrichedTrx.getDestAcct(), etx.getValue().getDestAcct());
-            Assert.assertEquals(testEnrichedTrx.getSrcAcct(), etx.getValue().getSrcAcct());
-            Assert.assertEquals(testEnrichedTrx.getSrcName(), etx.getValue().getSrcName());
-            Assert.assertEquals(testEnrichedTrx.getTrxType(), etx.getValue().getTrxType());
-            Assert.assertEquals(testEnrichedTrx.getAmount(), etx.getValue().getAmount());
-        }
+        ConcurrentLinkedQueue<Object> expected = new ConcurrentLinkedQueue<>();
+        expected.add(new StreamRecord<>(testEnrichedTrx));
+
+        ConcurrentLinkedQueue<Object> actual = testHarness.getOutput();
+
+        TestHarnessUtil.assertOutputEquals("Output not as expected.", expected, actual);
     }
 
     @Test
     public void testOnTimerWithNullCustomer() throws Exception {
-        enrichTransactionsWithCustomersJoinFunction = new EnrichTransactionsWithCustomersJoinFunction();
+        testEnrichedTrx.setSrcName(null);
 
-        testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
-                new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                TransactionsBean::getSrcAcct,
-                CustomersBean::getAcctNumber,
-                Types.STRING);
-
-        testHarness.open();
         testHarness.processElement1(testTrx, 10);
         testHarness.setProcessingTime(5011);
 
-        for (StreamRecord<? extends EnrichedTransactionsBean> etx : testHarness.extractOutputStreamRecords()) {
-            Assert.assertEquals(null, etx.getValue().getCif());
-            Assert.assertEquals(testEnrichedTrx.getDestAcct(), etx.getValue().getDestAcct());
-            Assert.assertEquals(testEnrichedTrx.getSrcAcct(), etx.getValue().getSrcAcct());
-            Assert.assertEquals(null, etx.getValue().getSrcName());
-            Assert.assertEquals(testEnrichedTrx.getTrxType(), etx.getValue().getTrxType());
-            Assert.assertEquals(testEnrichedTrx.getAmount(), etx.getValue().getAmount());
-        }
+        ConcurrentLinkedQueue<Object> expected = new ConcurrentLinkedQueue<>();
+        expected.add(new StreamRecord<>(testEnrichedTrx));
+
+        ConcurrentLinkedQueue<Object> actual = testHarness.getOutput();
+
+        TestHarnessUtil.assertOutputEquals("Output not as expected.", expected, actual);
     }
 }

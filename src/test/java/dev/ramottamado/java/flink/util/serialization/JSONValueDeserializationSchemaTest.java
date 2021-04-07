@@ -56,37 +56,37 @@ public class JSONValueDeserializationSchemaTest {
 
     @Test
     public void testDeserialize() throws Exception {
-        ObjectNode out = jsonValueDeserializationSchemaTest.deserialize(message);
+        ObjectNode actual = jsonValueDeserializationSchemaTest.deserialize(message);
         ObjectNode expected = mapper.createObjectNode().set("value", mapper.readValue(dummyEnvelope, JsonNode.class));
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(expected, out);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testDeserializeNull() throws Exception {
         message = null;
-        ObjectNode out = jsonValueDeserializationSchemaTest.deserialize(message);
+        ObjectNode actual = jsonValueDeserializationSchemaTest.deserialize(message);
         ObjectNode expected = mapper.createObjectNode();
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(expected, out);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testIsEndOfStream() throws Exception {
         ObjectNode nextElement = mapper.createObjectNode();
-        boolean out = jsonValueDeserializationSchemaTest.isEndOfStream(nextElement);
+        boolean actual = jsonValueDeserializationSchemaTest.isEndOfStream(nextElement);
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(false, out);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(false, actual);
     }
 
     @Test
     public void testGetProducedType() throws Exception {
-        TypeInformation<ObjectNode> out = jsonValueDeserializationSchemaTest.getProducedType();
+        TypeInformation<ObjectNode> actual = jsonValueDeserializationSchemaTest.getProducedType();
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(TypeInformation.of(ObjectNode.class), out);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(TypeInformation.of(ObjectNode.class), actual);
     }
 }

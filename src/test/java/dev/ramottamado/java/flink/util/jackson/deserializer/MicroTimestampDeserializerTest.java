@@ -32,7 +32,7 @@ public class MicroTimestampDeserializerTest {
     private String dummyJson = "{\"timestamp\":1616353207000000,\"another_timestamp\":1616353207000000}";
     private ObjectMapper mapper = new ObjectMapper();
     private SimpleModule module;
-    private ClassWithCustomSerDe testClassWithCustomSerDe;
+    private ClassWithCustomSerDe expected;
 
     @Before
     public void prepareTest() {
@@ -41,18 +41,17 @@ public class MicroTimestampDeserializerTest {
         module.addDeserializer(Instant.class, cusDeserializer);
         mapper.registerModule(module);
 
-        testClassWithCustomSerDe = new ClassWithCustomSerDe();
-        testClassWithCustomSerDe.setTimestamp(timestamp);
-        testClassWithCustomSerDe.setAnotherTimestamp(timestamp);
+        expected = new ClassWithCustomSerDe();
+        expected.setTimestamp(timestamp);
+        expected.setAnotherTimestamp(timestamp);
     }
 
     @Test
     public void testDeserialize() throws Exception {
-        ClassWithCustomSerDe out = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
+        ClassWithCustomSerDe actual = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(testClassWithCustomSerDe.getTimestamp(), out.getTimestamp());
-        Assert.assertEquals(testClassWithCustomSerDe.getAnotherTimestamp(), out.getAnotherTimestamp());
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
@@ -60,10 +59,10 @@ public class MicroTimestampDeserializerTest {
         dummyJson =
                 "{\"timestamp\":1616353207000000000000000000000000000000000,\"another_timestamp\":1616353207000000000000000000000000000000000}";
 
-        ClassWithCustomSerDe out = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
+        ClassWithCustomSerDe actual = mapper.readValue(dummyJson, ClassWithCustomSerDe.class);
 
-        Assert.assertNotNull(out);
-        Assert.assertNull(out.getTimestamp());
-        Assert.assertNull(out.getAnotherTimestamp());
+        Assert.assertNotNull(actual);
+        Assert.assertNull(actual.getTimestamp());
+        Assert.assertNull(actual.getAnotherTimestamp());
     }
 }

@@ -95,14 +95,10 @@ public class DebeziumJSONEnvelopeDeserializationSchemaTest {
 
         message = dummyCustEnvelope.getBytes();
 
-        CustomersBean out = (CustomersBean) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
+        CustomersBean actual = (CustomersBean) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(cust.getAcctNumber(), out.getAcctNumber());
-        Assert.assertEquals(cust.getCif(), out.getCif());
-        Assert.assertEquals(cust.getCity(), out.getCity());
-        Assert.assertEquals(cust.getFirstName(), out.getFirstName());
-        Assert.assertEquals(cust.getLastName(), out.getLastName());
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(cust, actual);
     }
 
     @Test
@@ -112,14 +108,10 @@ public class DebeziumJSONEnvelopeDeserializationSchemaTest {
 
         message = dummyTrxEnvelope.getBytes();
 
-        TransactionsBean out = (TransactionsBean) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
+        TransactionsBean actual = (TransactionsBean) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(trx.getSrcAcct(), out.getSrcAcct());
-        Assert.assertEquals(trx.getDestAcct(), out.getDestAcct());
-        Assert.assertEquals(trx.getTrxType(), out.getTrxType());
-        Assert.assertEquals(trx.getTrxTimestamp(), out.getTrxTimestamp());
-        Assert.assertEquals(trx.getAmount(), out.getAmount());
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(trx, actual);
     }
 
     @Test
@@ -129,13 +121,13 @@ public class DebeziumJSONEnvelopeDeserializationSchemaTest {
         debeziumJSONEnvelopeDeserializationSchema =
                 new DebeziumJSONEnvelopeDeserializationSchema<TransactionsBean>(TransactionsBean.class);
 
-        TransactionsBean out = (TransactionsBean) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
+        TransactionsBean actual = (TransactionsBean) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
 
-        Assert.assertNotNull(out);
-        Assert.assertNull(out.getSrcAcct());
-        Assert.assertNull(out.getDestAcct());
-        Assert.assertNull(out.getTrxType());
-        Assert.assertNull(out.getAmount());
-        Assert.assertNull(out.getTrxTimestamp());
+        Assert.assertNotNull(actual);
+        Assert.assertNull(actual.getSrcAcct());
+        Assert.assertNull(actual.getDestAcct());
+        Assert.assertNull(actual.getTrxType());
+        Assert.assertNull(actual.getAmount());
+        Assert.assertNull(actual.getTrxTimestamp());
     }
 }

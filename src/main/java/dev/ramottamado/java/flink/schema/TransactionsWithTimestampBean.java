@@ -30,4 +30,18 @@ public class TransactionsWithTimestampBean implements Serializable {
     public void setTrx(TransactionsBean trx) {
         this.trx = trx;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o != null && getClass() == o.getClass()) {
+            TransactionsWithTimestampBean that = (TransactionsWithTimestampBean) o;
+
+            return ((this.trx == null ? that.getTrx() == null : this.trx.equals(that.getTrx()))
+                    && this.timestamp == that.getTimestamp());
+        }
+
+        return false;
+    }
 }

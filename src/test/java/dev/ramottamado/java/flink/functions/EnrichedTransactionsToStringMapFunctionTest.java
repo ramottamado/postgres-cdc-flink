@@ -28,7 +28,7 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
 public class EnrichedTransactionsToStringMapFunctionTest {
     private EnrichedTransactionsToStringMapFunction etxMapper;
     private EnrichedTransactionsBean etx;
-    private String prettyEtx;
+    private String expected;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Before
@@ -43,16 +43,16 @@ public class EnrichedTransactionsToStringMapFunctionTest {
         etx.setSrcName("Tamado Sitohang");
         etx.setDestName("Kamal Rasyid");
 
-        prettyEtx = mapper.valueToTree(etx).toPrettyString();
+        expected = mapper.valueToTree(etx).toPrettyString();
     }
 
     @Test
     public void testMap() throws Exception {
         etxMapper = new EnrichedTransactionsToStringMapFunction();
 
-        String out = etxMapper.map(etx);
+        String actual = etxMapper.map(etx);
 
-        Assert.assertNotNull(out);
-        Assert.assertEquals(prettyEtx, out);
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected, actual);
     }
 }

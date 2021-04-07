@@ -56,4 +56,19 @@ public class ClassWithCustomSerDe {
     public Instant getAnotherTimestamp() {
         return anotherTimestamp;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o != null && getClass() == o.getClass()) {
+            ClassWithCustomSerDe that = (ClassWithCustomSerDe) o;
+
+            return ((this.timestamp == null ? that.getTimestamp() == null : this.timestamp.equals(that.getTimestamp()))
+                    && (this.anotherTimestamp == null ? that.getAnotherTimestamp() == null
+                            : this.anotherTimestamp.equals(that.getAnotherTimestamp())));
+        }
+
+        return false;
+    }
 }
