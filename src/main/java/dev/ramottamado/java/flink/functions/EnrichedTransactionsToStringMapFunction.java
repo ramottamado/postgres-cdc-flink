@@ -21,21 +21,21 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMap
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 import dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 /**
  * The {@link EnrichedTransactionsToStringMapFunction} implements {@link MapFunction}
- * allows for serializing {@link EnrichedTransactionsBean} into JSON with pretty format.
- * Useful for printing {@link EnrichedTransactionsBean} record to STDOUT.
+ * allows for serializing {@link EnrichedTransactions} into JSON with pretty format.
+ * Useful for printing {@link EnrichedTransactions} record to STDOUT.
  *
  * @see KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
  */
-public class EnrichedTransactionsToStringMapFunction implements MapFunction<EnrichedTransactionsBean, String> {
+public class EnrichedTransactionsToStringMapFunction implements MapFunction<EnrichedTransactions, String> {
     private final static long serialVersionUID = -129393123132L;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String map(EnrichedTransactionsBean value) {
+    public String map(EnrichedTransactions value) {
         return mapper.valueToTree(value).toPrettyString();
     }
 }

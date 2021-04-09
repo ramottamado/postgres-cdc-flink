@@ -34,15 +34,15 @@ import org.junit.Test;
 
 import dev.ramottamado.java.flink.functions.helper.TestSourceFunction;
 import dev.ramottamado.java.flink.functions.helper.TestTimestampAssigner;
-import dev.ramottamado.java.flink.schema.CustomersBean;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
-import dev.ramottamado.java.flink.schema.TransactionsBean;
+import dev.ramottamado.java.flink.schema.Customers;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.Transactions;
 
 public class TransactionsEnrichmentStreamingJobIntegrationTest {
-    public CustomersBean cust1;
-    public CustomersBean cust2;
-    public TransactionsBean trx;
-    public EnrichedTransactionsBean etx;
+    public Customers cust1;
+    public Customers cust2;
+    public Transactions trx;
+    public EnrichedTransactions etx;
 
     @ClassRule
     public static MiniClusterWithClientResource flinkCluster =
@@ -52,22 +52,22 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
                             .setNumberTaskManagers(1)
                             .build());
 
-    public static class CollectSink implements SinkFunction<EnrichedTransactionsBean> {
+    public static class CollectSink implements SinkFunction<EnrichedTransactions> {
         public static final long serialVersionUID = 1328490872834124987L;
-        public static final List<EnrichedTransactionsBean> values = Collections.synchronizedList(new ArrayList<>());
+        public static final List<EnrichedTransactions> values = Collections.synchronizedList(new ArrayList<>());
 
         @Override
-        public void invoke(EnrichedTransactionsBean value) {
+        public void invoke(EnrichedTransactions value) {
             values.add(value);
         }
     }
 
-    public static class TestTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
-        private final List<CustomersBean> customersBeans;
-        private final List<TransactionsBean> transactionsBeans;
+    public static class TestTransactionsEnrichmentStreamingJob extends AbstractTransactionsEnrichmentStreamingJob {
+        private final List<Customers> customersBeans;
+        private final List<Transactions> transactionsBeans;
 
-        public TestTransactionsEnrichmentStreamingJob(List<CustomersBean> customersBeans,
-                List<TransactionsBean> transactionsBeans) {
+        public TestTransactionsEnrichmentStreamingJob(List<Customers> customersBeans,
+                List<Transactions> transactionsBeans) {
             this.customersBeans = customersBeans;
             this.transactionsBeans = transactionsBeans;
         }
@@ -78,30 +78,30 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
         }
 
         @Override
-        public DataStream<CustomersBean> readCustomersCdcStream() {
-            return env.addSource(new TestSourceFunction<>(customersBeans, CustomersBean.class))
+        public DataStream<Customers> readCustomersCdcStream() {
+            return env.addSource(new TestSourceFunction<>(customersBeans, Customers.class))
                     .assignTimestampsAndWatermarks(new TestTimestampAssigner<>());
         }
 
         @Override
-        public DataStream<TransactionsBean> readTransactionsCdcStream() {
+        public DataStream<Transactions> readTransactionsCdcStream() {
             return env
-                    .addSource(new TestSourceFunction<>(transactionsBeans, TransactionsBean.class))
+                    .addSource(new TestSourceFunction<>(transactionsBeans, Transactions.class))
                     .assignTimestampsAndWatermarks(new TestTimestampAssigner<>());
         }
 
         @Override
-        public void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactionsBean> enrichedTrxStream) {
+        public void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactions> enrichedTrxStream) {
             enrichedTrxStream.addSink(new CollectSink());
         }
     }
 
     @Before
     public void prepareTest() {
-        cust1 = new CustomersBean();
-        cust2 = new CustomersBean();
-        trx = new TransactionsBean();
-        etx = new EnrichedTransactionsBean();
+        cust1 = new Customers();
+        cust2 = new Customers();
+        trx = new Transactions();
+        etx = new EnrichedTransactions();
 
         cust1.setAcctNumber("0001");
         cust1.setCif("001");
@@ -135,11 +135,11 @@ public class TransactionsEnrichmentStreamingJobIntegrationTest {
     public void testCreateApplicationPipeline() throws Exception {
         CollectSink.values.clear();
 
-        List<CustomersBean> customersBeans = new ArrayList<>();
+        List<Customers> customersBeans = new ArrayList<>();
         customersBeans.add(cust1);
         customersBeans.add(cust2);
 
-        List<TransactionsBean> transactionsBeans = new ArrayList<>();
+        List<Transactions> transactionsBeans = new ArrayList<>();
         transactionsBeans.add(trx);
 
         StreamExecutionEnvironment env = new TestTransactionsEnrichmentStreamingJob(customersBeans, transactionsBeans)

@@ -24,7 +24,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonPro
 /**
  * Customers POJO.
  */
-public class CustomersBean implements Serializable {
+public class Customers implements Serializable {
     @JsonIgnore
     private static final long serialVersionUID = -1999L;
 
@@ -46,7 +46,7 @@ public class CustomersBean implements Serializable {
     /**
      * Customers POJO.
      */
-    public CustomersBean() {
+    public Customers() {
     }
 
     @JsonProperty("cif")
@@ -111,7 +111,7 @@ public class CustomersBean implements Serializable {
         if (this == o) {
             return true;
         } else if (o != null && getClass() == o.getClass()) {
-            CustomersBean that = (CustomersBean) o;
+            Customers that = (Customers) o;
 
             return ((this.acctNumber == null ? that.getAcctNumber() == null
                     : this.acctNumber.equals(that.getAcctNumber())) &&

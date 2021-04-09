@@ -24,45 +24,46 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import dev.ramottamado.java.flink.functions.EnrichEnrichedTransactionsWithCustomersJoinFunction;
 import dev.ramottamado.java.flink.functions.EnrichTransactionsWithCustomersJoinFunction;
-import dev.ramottamado.java.flink.schema.CustomersBean;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
-import dev.ramottamado.java.flink.schema.TransactionsBean;
+import dev.ramottamado.java.flink.schema.Customers;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.Transactions;
 
 /**
- * The abstract class {@link TransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for enriching
- * {@link TransactionsBean} data using Flink. The core pipeline and functionality is encapsulated here, while subclasses
+ * The abstract class {@link AbstractTransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for
+ * enriching
+ * {@link Transactions} data using Flink. The core pipeline and functionality is encapsulated here, while subclasses
  * have to implement input and output methods. Check {@link KafkaTransactionsEnrichmentStreamingJob} for the
  * implementation using data stream from Kafka.
  *
  * @see KafkaTransactionsEnrichmentStreamingJob
  */
-public abstract class TransactionsEnrichmentStreamingJob {
-    protected static ParameterTool params;
-    protected StreamExecutionEnvironment env;
+public abstract class AbstractTransactionsEnrichmentStreamingJob {
+    public static ParameterTool params;
+    public StreamExecutionEnvironment env;
 
     /**
-     * Method to get {@link TransactionsBean} data stream.
+     * Method to get {@link Transactions} data stream.
      *
-     * @return                  the {@link TransactionsBean} data stream
+     * @return                  the {@link Transactions} data stream
      * @throws RuntimeException if input cannot be read.
      */
-    protected abstract DataStream<TransactionsBean> readTransactionsCdcStream() throws RuntimeException;
+    public abstract DataStream<Transactions> readTransactionsCdcStream() throws RuntimeException;
 
     /**
-     * Method to get {@link CustomersBean} data stream.
+     * Method to get {@link Customers} data stream.
      *
-     * @return                  the {@link CustomersBean} data stream
+     * @return                  the {@link Customers} data stream
      * @throws RuntimeException if input cannot be read.
      */
-    protected abstract DataStream<CustomersBean> readCustomersCdcStream() throws RuntimeException;
+    public abstract DataStream<Customers> readCustomersCdcStream() throws RuntimeException;
 
     /**
-     * Method to write {@link EnrichedTransactionsBean} data stream to sink.
+     * Method to write {@link EnrichedTransactions} data stream to sink.
      *
-     * @param  enrichedTrxStream the {@link EnrichedTransactionsBean} data stream
+     * @param  enrichedTrxStream the {@link EnrichedTransactions} data stream
      * @throws RuntimeException  if output cannot be written
      */
-    protected abstract void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactionsBean> enrichedTrxStream)
+    public abstract void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactions> enrichedTrxStream)
             throws RuntimeException;
 
     /**
@@ -71,12 +72,12 @@ public abstract class TransactionsEnrichmentStreamingJob {
      * @return                  the {@link StreamExecutionEnvironment} to run the pipeline
      * @throws RuntimeException if something wrong happened
      */
-    protected abstract StreamExecutionEnvironment createExecutionEnvironment()
+    public abstract StreamExecutionEnvironment createExecutionEnvironment()
             throws RuntimeException;
 
     /**
-     * The core logic and pipeline for enriching {@link TransactionsBean} data stream using data from
-     * {@link CustomersBean}.
+     * The core logic and pipeline for enriching {@link Transactions} data stream using data from
+     * {@link Customers}.
      *
      * @return                  the Flink {@link StreamExecutionEnvironment} environment
      * @throws RuntimeException if input/output cannot be read/write
@@ -84,19 +85,19 @@ public abstract class TransactionsEnrichmentStreamingJob {
     public final StreamExecutionEnvironment createApplicationPipeline() throws RuntimeException {
         env = createExecutionEnvironment();
 
-        KeyedStream<CustomersBean, String> keyedCustomersCdcStream = readCustomersCdcStream()
-                .keyBy(CustomersBean::getAcctNumber);
+        KeyedStream<Customers, String> keyedCustomersCdcStream = readCustomersCdcStream()
+                .keyBy(Customers::getAcctNumber);
 
-        KeyedStream<TransactionsBean, String> keyedTransactionsStream = readTransactionsCdcStream()
-                .keyBy(TransactionsBean::getSrcAcct);
+        KeyedStream<Transactions, String> keyedTransactionsStream = readTransactionsCdcStream()
+                .keyBy(Transactions::getSrcAcct);
 
-        KeyedStream<EnrichedTransactionsBean, String> enrichedTrxStream = keyedTransactionsStream
+        KeyedStream<EnrichedTransactions, String> enrichedTrxStream = keyedTransactionsStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions")
-                .keyBy(EnrichedTransactionsBean::getDestAcctAsKey);
+                .keyBy(EnrichedTransactions::getDestAcctAsKey);
 
-        SingleOutputStreamOperator<EnrichedTransactionsBean> enrichedTrxStream2 = enrichedTrxStream
+        SingleOutputStreamOperator<EnrichedTransactions> enrichedTrxStream2 = enrichedTrxStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichEnrichedTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions_2");

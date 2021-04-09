@@ -18,22 +18,22 @@ package dev.ramottamado.java.flink.functions;
 
 import org.apache.flink.api.java.functions.KeySelector;
 
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 /**
  * The {@link DestinationAccountKeySelector} implements Flink's own
  * {@link org.apache.flink.api.java.functions.KeySelector} to select {@code destAcct} as the key from
- * {@link EnrichedTransactionsBean}.
+ * {@link EnrichedTransactions}.
  *
- * @deprecated Replaced by {@link EnrichedTransactionsBean#getDestAcctAsKey()}
- * @see        EnrichedTransactionsBean#getDestAcctAsKey()
+ * @deprecated Replaced by {@link EnrichedTransactions#getDestAcctAsKey()}
+ * @see        EnrichedTransactions#getDestAcctAsKey()
  */
 @Deprecated
-public class DestinationAccountKeySelector implements KeySelector<EnrichedTransactionsBean, String> {
+public class DestinationAccountKeySelector implements KeySelector<EnrichedTransactions, String> {
     private static final long serialVersionUID = 12149238113L;
 
     @Override
-    public String getKey(EnrichedTransactionsBean value) {
+    public String getKey(EnrichedTransactions value) {
         String destAcct = value.getDestAcct();
 
         return (destAcct != null) ? destAcct : "NULL";

@@ -25,38 +25,38 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
-import dev.ramottamado.java.flink.schema.CustomersBean;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsWithTimestampBean;
+import dev.ramottamado.java.flink.schema.Customers;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionsWithTimestamp;
 
 /**
  * The {@link EnrichEnrichedTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
- * to join the {@link EnrichedTransactionsBean} stream with {@link CustomersBean} stream.
+ * to join the {@link EnrichedTransactions} stream with {@link Customers} stream.
  */
 public class EnrichEnrichedTransactionsWithCustomersJoinFunction
-        extends KeyedCoProcessFunction<String, EnrichedTransactionsBean, CustomersBean, EnrichedTransactionsBean> {
+        extends KeyedCoProcessFunction<String, EnrichedTransactions, Customers, EnrichedTransactions> {
     private static final long serialVersionUID = 12319238113L;
-    private ValueState<CustomersBean> referenceDataState;
-    private ValueState<EnrichedTransactionsWithTimestampBean> latestEnrichedTrx;
+    private ValueState<Customers> referenceDataState;
+    private ValueState<EnrichedTransactionsWithTimestamp> latestEnrichedTrx;
 
     @Override
     public void open(Configuration parameters) {
-        ValueStateDescriptor<CustomersBean> cDescriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<Customers> cDescriptor = new ValueStateDescriptor<>(
                 "customers",
-                TypeInformation.of(CustomersBean.class));
+                TypeInformation.of(Customers.class));
 
-        ValueStateDescriptor<EnrichedTransactionsWithTimestampBean> eDescriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<EnrichedTransactionsWithTimestamp> eDescriptor = new ValueStateDescriptor<>(
                 "enrichedTransactions",
-                TypeInformation.of(EnrichedTransactionsWithTimestampBean.class));
+                TypeInformation.of(EnrichedTransactionsWithTimestamp.class));
 
         referenceDataState = getRuntimeContext().getState(cDescriptor);
         latestEnrichedTrx = getRuntimeContext().getState(eDescriptor);
     }
 
     @Override
-    public void processElement1(EnrichedTransactionsBean value, Context ctx, Collector<EnrichedTransactionsBean> out)
+    public void processElement1(EnrichedTransactions value, Context ctx, Collector<EnrichedTransactions> out)
             throws Exception {
-        CustomersBean customersState = referenceDataState.value();
+        Customers customersState = referenceDataState.value();
 
         if (Objects.equals(ctx.getCurrentKey(), "NULL")) {
             out.collect(value);
@@ -64,7 +64,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
             value.setDestName(customersState.getFirstName() + " " + customersState.getLastName());
             out.collect(value);
         } else {
-            EnrichedTransactionsWithTimestampBean etxWithTimestamp = new EnrichedTransactionsWithTimestampBean();
+            EnrichedTransactionsWithTimestamp etxWithTimestamp = new EnrichedTransactionsWithTimestamp();
             etxWithTimestamp.setTimestamp(ctx.timestamp());
             etxWithTimestamp.setEtx(value);
 
@@ -74,16 +74,16 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement2(CustomersBean value, Context ctx, Collector<EnrichedTransactionsBean> collector)
+    public void processElement2(Customers value, Context ctx, Collector<EnrichedTransactions> collector)
             throws Exception {
         referenceDataState.update(value);
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactionsBean> out) throws Exception {
-        EnrichedTransactionsWithTimestampBean lastEtx = latestEnrichedTrx.value();
-        CustomersBean cust = referenceDataState.value();
-        EnrichedTransactionsBean etx = lastEtx.getEtx();
+    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactions> out) throws Exception {
+        EnrichedTransactionsWithTimestamp lastEtx = latestEnrichedTrx.value();
+        Customers cust = referenceDataState.value();
+        EnrichedTransactions etx = lastEtx.getEtx();
 
         if (cust != null) {
             etx.setDestName((cust.getFirstName() + " " + cust.getLastName()).trim());

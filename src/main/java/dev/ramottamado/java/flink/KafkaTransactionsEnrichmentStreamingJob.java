@@ -38,26 +38,26 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 import dev.ramottamado.java.flink.functions.EnrichedTransactionsToStringMapFunction;
-import dev.ramottamado.java.flink.schema.CustomersBean;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
-import dev.ramottamado.java.flink.schema.TransactionsBean;
+import dev.ramottamado.java.flink.schema.Customers;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.Transactions;
 import dev.ramottamado.java.flink.util.ParameterUtils;
 import dev.ramottamado.java.flink.util.kafka.KafkaProperties;
 import dev.ramottamado.java.flink.util.serialization.DebeziumJSONEnvelopeDeserializationSchema;
 import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsKafkaSerializationSchema;
 
 /**
- * The class {@link KafkaTransactionsEnrichmentStreamingJob} provides {@link TransactionsEnrichmentStreamingJob}
- * for enriching {@link TransactionsBean} data using Flink.
+ * The class {@link KafkaTransactionsEnrichmentStreamingJob} provides {@link AbstractTransactionsEnrichmentStreamingJob}
+ * for enriching {@link Transactions} data using Flink.
  *
- * @see TransactionsEnrichmentStreamingJob
+ * @see AbstractTransactionsEnrichmentStreamingJob
  */
-public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichmentStreamingJob {
-    private final DebeziumJSONEnvelopeDeserializationSchema<TransactionsBean> tDeserializationSchema =
-            new DebeziumJSONEnvelopeDeserializationSchema<>(TransactionsBean.class);
+public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransactionsEnrichmentStreamingJob {
+    private final DebeziumJSONEnvelopeDeserializationSchema<Transactions> tDeserializationSchema =
+            new DebeziumJSONEnvelopeDeserializationSchema<>(Transactions.class);
 
-    private final DebeziumJSONEnvelopeDeserializationSchema<CustomersBean> cDeserializationSchema =
-            new DebeziumJSONEnvelopeDeserializationSchema<>(CustomersBean.class);
+    private final DebeziumJSONEnvelopeDeserializationSchema<Customers> cDeserializationSchema =
+            new DebeziumJSONEnvelopeDeserializationSchema<>(Customers.class);
 
     private final EnrichedTransactionsKafkaSerializationSchema etxSerializationSchema =
             new EnrichedTransactionsKafkaSerializationSchema("enriched_transactions");
@@ -75,10 +75,10 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     }
 
     @Override
-    public final DataStream<TransactionsBean> readTransactionsCdcStream() throws RuntimeException {
+    public final DataStream<Transactions> readTransactionsCdcStream() throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<TransactionsBean> tKafkaConsumer = new FlinkKafkaConsumer<>(
+        FlinkKafkaConsumer<Transactions> tKafkaConsumer = new FlinkKafkaConsumer<>(
                 params.getRequired(KAFKA_SOURCE_TOPIC_1),
                 tDeserializationSchema,
                 properties);
@@ -89,11 +89,11 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     }
 
     @Override
-    public final DataStream<CustomersBean> readCustomersCdcStream()
+    public final DataStream<Customers> readCustomersCdcStream()
             throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<CustomersBean> cKafkaConsumer =
+        FlinkKafkaConsumer<Customers> cKafkaConsumer =
                 new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties);
 
         setFlinkKafkaConsumerOffsetStrategy(params, cKafkaConsumer);
@@ -102,11 +102,11 @@ public class KafkaTransactionsEnrichmentStreamingJob extends TransactionsEnrichm
     }
 
     @Override
-    public final void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactionsBean> enrichedTrxStream)
+    public final void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactions> enrichedTrxStream)
             throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaProducer<EnrichedTransactionsBean> etxKafkaProducer = new FlinkKafkaProducer<>(
+        FlinkKafkaProducer<EnrichedTransactions> etxKafkaProducer = new FlinkKafkaProducer<>(
                 params.get(KAFKA_TARGET_TOPIC, "enriched_transactions"),
                 etxSerializationSchema,
                 properties,

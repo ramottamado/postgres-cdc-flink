@@ -28,11 +28,11 @@ import dev.ramottamado.java.flink.util.jackson.deserializer.MicroTimestampDeseri
 import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
 /**
- * Enriched transactions POJO.
+ * Transactions POJO.
  */
-public class EnrichedTransactionsBean implements Serializable {
+public class Transactions implements Serializable {
     @JsonIgnore
-    private static final long serialVersionUID = -2000L;
+    private static final long serialVersionUID = -2001L;
 
     @JsonProperty("src_acct")
     private String srcAcct;
@@ -46,24 +46,15 @@ public class EnrichedTransactionsBean implements Serializable {
     @JsonProperty("amount")
     private Double amount;
 
-    @JsonProperty("cif")
-    private String cif;
-
-    @JsonProperty("src_name")
-    private String srcName;
-
-    @JsonProperty("dest_name")
-    private String destName;
-
     @JsonProperty("trx_timestamp")
     @JsonSerialize(using = TimestampSerializer.class)
     @JsonDeserialize(using = MicroTimestampDeserializer.class)
     private Instant trxTimestamp;
 
     /**
-     * Enriched transactions POJO.
+     * Transactions POJO.
      */
-    public EnrichedTransactionsBean() {
+    public Transactions() {
     }
 
     @JsonProperty("src_acct")
@@ -106,36 +97,6 @@ public class EnrichedTransactionsBean implements Serializable {
         this.amount = amount;
     }
 
-    @JsonProperty("cif")
-    public String getCif() {
-        return cif;
-    }
-
-    @JsonProperty("cif")
-    public void setCif(String cif) {
-        this.cif = cif;
-    }
-
-    @JsonProperty("src_name")
-    public String getSrcName() {
-        return srcName;
-    }
-
-    @JsonProperty("src_name")
-    public void setSrcName(String srcName) {
-        this.srcName = srcName;
-    }
-
-    @JsonProperty("dest_name")
-    public String getDestName() {
-        return destName;
-    }
-
-    @JsonProperty("dest_name")
-    public void setDestName(String destName) {
-        this.destName = destName;
-    }
-
     @JsonProperty("trx_timestamp")
     public Instant getTrxTimestamp() {
         return trxTimestamp;
@@ -147,24 +108,16 @@ public class EnrichedTransactionsBean implements Serializable {
     }
 
     @JsonIgnore
-    public String getDestAcctAsKey() {
-        return (destAcct != null) ? destAcct : "NULL";
-    }
-
-    @JsonIgnore
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         } else if (o != null && getClass() == o.getClass()) {
-            EnrichedTransactionsBean that = (EnrichedTransactionsBean) o;
+            Transactions that = (Transactions) o;
 
             return ((this.amount == null ? that.getAmount() == null : this.amount.equals(that.getAmount())) &&
-                    (this.cif == null ? that.getCif() == null : this.cif.equals(that.getCif())) &&
                     (this.destAcct == null ? that.getDestAcct() == null : this.destAcct.equals(that.getDestAcct())) &&
-                    (this.destName == null ? that.getDestName() == null : this.destName.equals(that.getDestName())) &&
                     (this.srcAcct == null ? that.getSrcAcct() == null : this.srcAcct.equals(that.getSrcAcct())) &&
-                    (this.srcName == null ? that.getSrcName() == null : this.srcName.equals(that.getSrcName())) &&
                     (this.trxTimestamp == null ? that.getTrxTimestamp() == null
                             : this.trxTimestamp.equals(that.getTrxTimestamp()))
                     && (this.trxType == null ? that.getTrxType() == null : this.trxType.equals(that.getTrxType())));

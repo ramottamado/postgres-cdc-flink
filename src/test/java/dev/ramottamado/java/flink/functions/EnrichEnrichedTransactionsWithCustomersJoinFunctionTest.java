@@ -27,25 +27,25 @@ import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.CustomersBean;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.Customers;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
-    private KeyedTwoInputStreamOperatorTestHarness<String, EnrichedTransactionsBean, CustomersBean, EnrichedTransactionsBean> testHarness;
-    private CustomersBean testCustomer;
-    private EnrichedTransactionsBean testEnrichedTrx;
-    private EnrichedTransactionsBean testEnrichedTrxResult;
+    private KeyedTwoInputStreamOperatorTestHarness<String, EnrichedTransactions, Customers, EnrichedTransactions> testHarness;
+    private Customers testCustomer;
+    private EnrichedTransactions testEnrichedTrx;
+    private EnrichedTransactions testEnrichedTrxResult;
 
     @Before
     public void prepareTest() throws Exception {
-        testCustomer = new CustomersBean();
+        testCustomer = new Customers();
         testCustomer.setAcctNumber("0002");
         testCustomer.setCif("002");
         testCustomer.setCity("Jakarta");
         testCustomer.setFirstName("Kamal");
         testCustomer.setLastName("Rasyid");
 
-        testEnrichedTrx = new EnrichedTransactionsBean();
+        testEnrichedTrx = new EnrichedTransactions();
         testEnrichedTrx.setAmount(10000.0);
         testEnrichedTrx.setDestAcct("0002");
         testEnrichedTrx.setSrcAcct("0001");
@@ -54,7 +54,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
         testEnrichedTrx.setCif("001");
         testEnrichedTrx.setSrcName("Tamado Sitohang");
 
-        testEnrichedTrxResult = new EnrichedTransactionsBean();
+        testEnrichedTrxResult = new EnrichedTransactions();
         testEnrichedTrxResult.setAmount(10000.0);
         testEnrichedTrxResult.setDestAcct("0002");
         testEnrichedTrxResult.setSrcAcct("0001");
@@ -64,12 +64,13 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
         testEnrichedTrxResult.setSrcName("Tamado Sitohang");
         testEnrichedTrxResult.setDestName("Kamal Rasyid");
 
-        EnrichEnrichedTransactionsWithCustomersJoinFunction enrichEnrichedTransactionsWithCustomersJoinFunction = new EnrichEnrichedTransactionsWithCustomersJoinFunction();
+        EnrichEnrichedTransactionsWithCustomersJoinFunction enrichEnrichedTransactionsWithCustomersJoinFunction =
+                new EnrichEnrichedTransactionsWithCustomersJoinFunction();
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichEnrichedTransactionsWithCustomersJoinFunction),
-                EnrichedTransactionsBean::getDestAcctAsKey,
-                CustomersBean::getAcctNumber,
+                EnrichedTransactions::getDestAcctAsKey,
+                Customers::getAcctNumber,
                 Types.STRING);
 
         testHarness.open();

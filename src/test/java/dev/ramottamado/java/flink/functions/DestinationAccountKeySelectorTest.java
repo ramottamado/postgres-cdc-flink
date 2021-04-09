@@ -22,18 +22,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 @SuppressWarnings("deprecation")
 public class DestinationAccountKeySelectorTest {
-    private EnrichedTransactionsBean etx;
+    private EnrichedTransactions etx;
     private DestinationAccountKeySelector selector;
 
     @Before
     public void prepareTest() {
         selector = new DestinationAccountKeySelector();
 
-        etx = new EnrichedTransactionsBean();
+        etx = new EnrichedTransactions();
         etx.setAmount(10000.0);
         etx.setDestAcct("0002");
         etx.setSrcAcct("0001");

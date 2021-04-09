@@ -23,16 +23,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsBean;
+import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 public class EnrichedTransactionsToStringMapFunctionTest {
     private final ObjectMapper mapper = new ObjectMapper();
-    private EnrichedTransactionsBean etx;
+    private EnrichedTransactions etx;
     private String expected;
 
     @Before
     public void prepareTest() throws Exception {
-        etx = new EnrichedTransactionsBean();
+        etx = new EnrichedTransactions();
         etx.setAmount(10000.0);
         etx.setDestAcct("0002");
         etx.setSrcAcct("0001");
