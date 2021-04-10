@@ -18,7 +18,7 @@ limitations under the License.
 
 	<groupId>dev.ramottamado.java.flink</groupId>
 	<artifactId>flink-java</artifactId>
-	<version>1.0.0-rc.1</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Kafka Transactions Stream Enrichment</name>
