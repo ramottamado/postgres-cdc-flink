@@ -17,7 +17,7 @@ limitations under the License.
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>dev.ramottamado.java.flink</groupId>
-	<artifactId>flink-java</artifactId>
+	<artifactId>postgres-cdc-flink</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
