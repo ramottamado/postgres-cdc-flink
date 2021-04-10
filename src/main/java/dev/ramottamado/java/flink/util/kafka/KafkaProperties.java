@@ -24,10 +24,16 @@ import java.util.Properties;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
+
 /**
  * The {@link KafkaProperties} allows for constructing new {@link Properties} for Kafka consumer from
  * {@link ParameterTool}.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@PublicEvolving
 public class KafkaProperties {
     /**
      * Get new {@link Properties} from passed {@link ParameterTool}.
@@ -36,6 +42,8 @@ public class KafkaProperties {
      * @return                  the properties for Kafka consumer to use
      * @throws RuntimeException if {@link dev.ramottamado.java.flink.config.ParameterConfig#KAFKA_BOOTSTRAP_SERVER} is
      *                          not set
+     * @author                  Tamado Sitohang
+     * @since                   1.0
      */
     public static Properties getProperties(ParameterTool params) throws RuntimeException {
         Properties properties = new Properties();

@@ -18,10 +18,16 @@ package dev.ramottamado.java.flink.config;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 
+import dev.ramottamado.java.flink.annotation.Internal;
+
 /**
  * The main class to place constants for {@link ParameterTool}.
  * The constants will be the parameters when running the application.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@Internal
 public final class ParameterConfig {
     public static final String CHECKPOINT_PATH = "checkpoint-path";
     public static final String DEBUG_RESULT_STREAM = "debug-result-stream";

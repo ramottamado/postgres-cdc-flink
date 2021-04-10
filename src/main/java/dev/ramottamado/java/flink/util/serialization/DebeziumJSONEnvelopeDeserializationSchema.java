@@ -23,12 +23,17 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
+
 /**
  * The {@link DebeziumJSONEnvelopeDeserializationSchema} describes how to deserialize byte messages from Debezium
  * into POJOs.
  *
- * @param <T> the type of POJO
+ * @param  <T> the type of POJO
+ * @author     Tamado Sitohang
+ * @since      1.0
  */
+@PublicEvolving
 public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeserializationSchema<T> {
     private static final long serialVersionUID = -91238719810201L;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -37,7 +42,9 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
      * The {@link DebeziumJSONEnvelopeDeserializationSchema} describes how to deserialize byte messages from Debezium
      * into POJOs.
      *
-     * @param type the type of POJO
+     * @param  type the type of POJO
+     * @author      Tamado Sitohang
+     * @since       1.0
      */
     public DebeziumJSONEnvelopeDeserializationSchema(Class<T> type) {
         super(type);

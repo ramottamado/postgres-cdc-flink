@@ -21,9 +21,15 @@ import java.io.Serializable;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
+import dev.ramottamado.java.flink.annotation.Public;
+
 /**
  * Customers POJO.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@Public
 public class Customers implements Serializable {
     @JsonIgnore
     private static final long serialVersionUID = -1999L;
@@ -45,6 +51,9 @@ public class Customers implements Serializable {
 
     /**
      * Customers POJO.
+     *
+     * @author Tamado Sitohang
+     * @since  1.0
      */
     public Customers() {
     }

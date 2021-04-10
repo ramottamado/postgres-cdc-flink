@@ -23,12 +23,17 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
 import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 
 /**
  * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize {@link EnrichedTransactions}
  * into {@link ProducerRecord} for Apache Kafka.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@PublicEvolving
 public class EnrichedTransactionsKafkaSerializationSchema
         implements KafkaSerializationSchema<EnrichedTransactions> {
     private final static long serialVersionUID = -102983L;
@@ -40,7 +45,9 @@ public class EnrichedTransactionsKafkaSerializationSchema
      * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize
      * {@link EnrichedTransactions} into {@link ProducerRecord} for Apache Kafka.
      *
-     * @param topic the Kafka topic to publish the resulting records
+     * @param  topic the Kafka topic to publish the resulting records
+     * @author       Tamado Sitohang
+     * @since        1.0
      */
     public EnrichedTransactionsKafkaSerializationSchema(String topic) {
         super();

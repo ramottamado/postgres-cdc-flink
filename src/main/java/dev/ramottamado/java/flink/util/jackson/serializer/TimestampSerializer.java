@@ -26,18 +26,30 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonGenerator
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.SerializerProvider;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
+import dev.ramottamado.java.flink.annotation.VisibleForTesting;
+
 /**
  * The {@link TimestampSerializer} allows for serializing {@link java.time.Instant}
  * into parsed timestamp without zone info.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@PublicEvolving
 public class TimestampSerializer extends StdSerializer<Instant> {
     private static final long serialVersionUID = 123718191L;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Z"));
+    private final DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Z"));
 
     /**
      * The {@link TimestampSerializer} allows for serializing {@link java.time.Instant}
      * into parsed timestamp without zone info.
+     *
+     * @author Tamado Sitohang
+     * @since  1.0
      */
+    @VisibleForTesting
     public TimestampSerializer() {
         super(Instant.class);
     }
@@ -46,8 +58,11 @@ public class TimestampSerializer extends StdSerializer<Instant> {
      * The {@link TimestampSerializer} allows for serializing {@link java.time.Instant}
      * into parsed timestamp without zone info.
      *
-     * @param type the type of deserialized POJO ({@link java.time.Instant})
+     * @param  type the type of deserialized POJO ({@link java.time.Instant})
+     * @author      Tamado Sitohang
+     * @since       1.0
      */
+    @VisibleForTesting
     public TimestampSerializer(Class<Instant> type) {
         super(type);
     }

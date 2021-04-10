@@ -16,11 +16,16 @@
 
 package dev.ramottamado.java.flink.schema;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
 import dev.ramottamado.java.flink.api.schema.ClassWithTimestamp;
 
 /**
  * Transactions POJO with timestamp.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@PublicEvolving
 public class TransactionsWithTimestamp extends ClassWithTimestamp {
     private static final long serialVersionUID = -2003L;
     private long timestamp;
@@ -28,7 +33,11 @@ public class TransactionsWithTimestamp extends ClassWithTimestamp {
 
     /**
      * Transactions POJO with timestamp.
+     *
+     * @author Tamado Sitohang
+     * @since  1.0
      */
+    @PublicEvolving
     public TransactionsWithTimestamp() {
     }
 

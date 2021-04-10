@@ -28,7 +28,9 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactions;
  * allows for serializing {@link EnrichedTransactions} into JSON with pretty format.
  * Useful for printing {@link EnrichedTransactions} record to STDOUT.
  *
- * @see KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
+ * @author Tamado Sitohang
+ * @see    KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
+ * @since  1.0
  */
 public class EnrichedTransactionsToStringMapFunction implements MapFunction<EnrichedTransactions, String> {
     private final static long serialVersionUID = -129393123132L;

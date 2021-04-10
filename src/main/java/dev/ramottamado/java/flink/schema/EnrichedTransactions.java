@@ -24,12 +24,17 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonPro
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import dev.ramottamado.java.flink.annotation.Public;
 import dev.ramottamado.java.flink.util.jackson.deserializer.MicroTimestampDeserializer;
 import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
 /**
  * Enriched transactions POJO.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@Public
 public class EnrichedTransactions implements Serializable {
     @JsonIgnore
     private static final long serialVersionUID = -2000L;
@@ -62,6 +67,9 @@ public class EnrichedTransactions implements Serializable {
 
     /**
      * Enriched transactions POJO.
+     *
+     * @author Tamado Sitohang
+     * @since  1.0
      */
     public EnrichedTransactions() {
     }

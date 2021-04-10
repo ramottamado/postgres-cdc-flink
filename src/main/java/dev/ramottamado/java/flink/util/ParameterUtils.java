@@ -22,11 +22,16 @@ import java.io.IOException;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
 import dev.ramottamado.java.flink.config.ParameterConfig;
 
 /**
  * The {@link ParameterUtils} provides methods to parse arguments into parameters for the application to run.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@PublicEvolving
 public final class ParameterUtils {
     /**
      * Parse arguments and assign into {@link ParameterTool} parameters.
@@ -35,6 +40,8 @@ public final class ParameterUtils {
      * @return                  the {@link ParameterTool} parameters
      * @throws RuntimeException if file described in parameter {@link ParameterConfig#PROPERTIES_FILE} is not exist or
      *                          unreadable
+     * @author                  Tamado Sitohang
+     * @since                   1.0
      */
     public static ParameterTool parseArgs(String[] args) throws RuntimeException {
         ParameterTool params = ParameterTool.fromArgs(args);

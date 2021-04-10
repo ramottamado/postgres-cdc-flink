@@ -22,17 +22,28 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonParser;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.DeserializationContext;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
+import dev.ramottamado.java.flink.annotation.PublicEvolving;
+import dev.ramottamado.java.flink.annotation.VisibleForTesting;
+
 /**
  * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
  * {@link java.time.Instant}.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@PublicEvolving
 public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
     private static final long serialVersionUID = 8178417124781L;
 
     /**
      * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
      * {@link java.time.Instant}.
+     *
+     * @author Tamado Sitohang
+     * @since  1.0
      */
+    @VisibleForTesting
     public MicroTimestampDeserializer() {
         super(Instant.class);
     }
@@ -41,8 +52,11 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
      * The {@link MicroTimestampDeserializer} allows for deserializing Debezium {@code MicroTimestamp} into
      * {@link java.time.Instant}.
      *
-     * @param vc the value class of serialized data
+     * @param  vc the value class of serialized data
+     * @author    Tamado Sitohang
+     * @since     1.0
      */
+    @VisibleForTesting
     public MicroTimestampDeserializer(Class<?> vc) {
         super(vc);
     }

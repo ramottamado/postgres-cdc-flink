@@ -37,6 +37,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
+import dev.ramottamado.java.flink.annotation.Public;
 import dev.ramottamado.java.flink.functions.EnrichedTransactionsToStringMapFunction;
 import dev.ramottamado.java.flink.schema.Customers;
 import dev.ramottamado.java.flink.schema.EnrichedTransactions;
@@ -47,11 +48,14 @@ import dev.ramottamado.java.flink.util.serialization.DebeziumJSONEnvelopeDeseria
 import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsKafkaSerializationSchema;
 
 /**
- * The class {@link KafkaTransactionsEnrichmentStreamingJob} provides {@link AbstractTransactionsEnrichmentStreamingJob}
+ * The class {@code KafkaTransactionsEnrichmentStreamingJob} provides {@link AbstractTransactionsEnrichmentStreamingJob}
  * for enriching {@link Transactions} data using Flink.
  *
- * @see AbstractTransactionsEnrichmentStreamingJob
+ * @author Tamado Sitohang
+ * @see    AbstractTransactionsEnrichmentStreamingJob
+ * @since  1.0
  */
+@Public
 public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransactionsEnrichmentStreamingJob {
     private final DebeziumJSONEnvelopeDeserializationSchema<Transactions> tDeserializationSchema =
             new DebeziumJSONEnvelopeDeserializationSchema<>(Transactions.class);

@@ -27,8 +27,10 @@ import dev.ramottamado.java.flink.KafkaTransactionsEnrichmentStreamingJob;
  * The {@link EnrichedTransactionsToStringMapFunction} implements {@link MapFunction} allows for deserializing Debezium
  * JSON envelope into POJO.
  *
- * @param <T> the type of deserialized POJO
- * @see       KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
+ * @param  <T> the type of deserialized POJO
+ * @author     Tamado Sitohang
+ * @see        KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
+ * @since      1.0
  */
 public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> {
     private static final long serialVersionUID = 123456672L;
@@ -40,7 +42,10 @@ public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> 
      * {@link org.apache.flink.api.common.functions.MapFunction}
      * allows for deserializing Debezium JSON envelope into POJO.
      *
-     * @param type the type of deserialized POJO
+     * @param  type the type of deserialized POJO
+     * @author      Tamado Sitohang
+     * @see         KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
+     * @since       1.0
      */
     public EnvelopeParserMapFunction(Class<T> type) {
         this.type = type;

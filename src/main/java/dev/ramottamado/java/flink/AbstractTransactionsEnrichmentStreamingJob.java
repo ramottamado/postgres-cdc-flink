@@ -22,6 +22,7 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import dev.ramottamado.java.flink.annotation.Public;
 import dev.ramottamado.java.flink.functions.EnrichEnrichedTransactionsWithCustomersJoinFunction;
 import dev.ramottamado.java.flink.functions.EnrichTransactionsWithCustomersJoinFunction;
 import dev.ramottamado.java.flink.schema.Customers;
@@ -29,14 +30,16 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactions;
 import dev.ramottamado.java.flink.schema.Transactions;
 
 /**
- * The abstract class {@link AbstractTransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for
- * enriching
- * {@link Transactions} data using Flink. The core pipeline and functionality is encapsulated here, while subclasses
- * have to implement input and output methods. Check {@link KafkaTransactionsEnrichmentStreamingJob} for the
+ * The abstract class {@code AbstractTransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for
+ * enriching {@link Transactions} data using Flink. The core pipeline and functionality is encapsulated here, while
+ * subclasses have to implement input and output methods. Check {@link KafkaTransactionsEnrichmentStreamingJob} for the
  * implementation using data stream from Kafka.
  *
- * @see KafkaTransactionsEnrichmentStreamingJob
+ * @author Tamado Sitohang
+ * @see    KafkaTransactionsEnrichmentStreamingJob
+ * @since  1.0
  */
+@Public
 public abstract class AbstractTransactionsEnrichmentStreamingJob {
     public static ParameterTool params;
     public StreamExecutionEnvironment env;
@@ -46,6 +49,7 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
      *
      * @return                  the {@link Transactions} data stream
      * @throws RuntimeException if input cannot be read.
+     * @since                   1.0
      */
     public abstract DataStream<Transactions> readTransactionsCdcStream() throws RuntimeException;
 
@@ -54,6 +58,7 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
      *
      * @return                  the {@link Customers} data stream
      * @throws RuntimeException if input cannot be read.
+     * @since                   1.0
      */
     public abstract DataStream<Customers> readCustomersCdcStream() throws RuntimeException;
 
@@ -62,6 +67,7 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
      *
      * @param  enrichedTrxStream the {@link EnrichedTransactions} data stream
      * @throws RuntimeException  if output cannot be written
+     * @since                    1.0
      */
     public abstract void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactions> enrichedTrxStream)
             throws RuntimeException;
@@ -71,6 +77,7 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
      *
      * @return                  the {@link StreamExecutionEnvironment} to run the pipeline
      * @throws RuntimeException if something wrong happened
+     * @since                   1.0
      */
     public abstract StreamExecutionEnvironment createExecutionEnvironment()
             throws RuntimeException;
@@ -81,6 +88,7 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
      *
      * @return                  the Flink {@link StreamExecutionEnvironment} environment
      * @throws RuntimeException if input/output cannot be read/write
+     * @since                   1.0
      */
     public final StreamExecutionEnvironment createApplicationPipeline() throws RuntimeException {
         env = createExecutionEnvironment();

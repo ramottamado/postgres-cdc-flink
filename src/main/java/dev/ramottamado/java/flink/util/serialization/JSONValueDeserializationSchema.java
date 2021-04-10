@@ -26,10 +26,16 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ramottamado.java.flink.annotation.Internal;
+
 /**
  * The {@link JSONValueDeserializationSchema} describes how to deserialize message from Debezium
  * into {@link ObjectNode}.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
+@Internal
 public class JSONValueDeserializationSchema extends AbstractDeserializationSchema<ObjectNode> {
     private static final long serialVersionUID = -91238719810201L;
     private final ObjectMapper mapper = new ObjectMapper();

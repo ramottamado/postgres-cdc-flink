@@ -32,6 +32,9 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactionsWithTimestamp;
 /**
  * The {@link EnrichEnrichedTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
  * to join the {@link EnrichedTransactions} stream with {@link Customers} stream.
+ *
+ * @author Tamado Sitohang
+ * @since  1.0
  */
 public class EnrichEnrichedTransactionsWithCustomersJoinFunction
         extends KeyedCoProcessFunction<String, EnrichedTransactions, Customers, EnrichedTransactions> {

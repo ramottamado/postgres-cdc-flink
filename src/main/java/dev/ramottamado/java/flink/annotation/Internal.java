@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package dev.ramottamado.java.flink.api.schema;
+package dev.ramottamado.java.flink.annotation;
 
-import java.io.Serializable;
-
-import dev.ramottamado.java.flink.annotation.Internal;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
- * {@code ClassWithTimestamp} provides base class for classes that implements timestamp for use in Flink
- * {@code ProcessFunction} {@code onTimer} methods.
+ * Interface to mark methods within stable, public APIs as an internal developer API.
  *
- * @author Tamado Sitohang
- * @since  1.0
+ * <p>
+ * Developer APIs are stable but internal and might change across releases.
  */
-@Internal
-public abstract class ClassWithTimestamp implements Serializable {
-    private static final long serialVersionUID = 1L;
-    public long timestamp;
-
-    public abstract long getTimestamp();
-
-    public abstract void setTimestamp(long timestamp);
+@Documented
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
+public @interface Internal {
 }
