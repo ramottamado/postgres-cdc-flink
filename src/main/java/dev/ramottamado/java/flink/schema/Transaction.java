@@ -29,13 +29,13 @@ import dev.ramottamado.java.flink.util.jackson.deserializer.MicroTimestampDeseri
 import dev.ramottamado.java.flink.util.jackson.serializer.TimestampSerializer;
 
 /**
- * Transactions POJO.
+ * Transaction POJO.
  *
  * @author Tamado Sitohang
  * @since  1.0
  */
 @Public
-public class Transactions implements Serializable {
+public class Transaction implements Serializable {
     @JsonIgnore
     private static final long serialVersionUID = -2001L;
 
@@ -57,12 +57,12 @@ public class Transactions implements Serializable {
     private Instant trxTimestamp;
 
     /**
-     * Transactions POJO.
+     * Transaction POJO.
      *
      * @author Tamado Sitohang
      * @since  1.0
      */
-    public Transactions() {
+    public Transaction() {
     }
 
     @JsonProperty("src_acct")
@@ -121,7 +121,7 @@ public class Transactions implements Serializable {
         if (this == o) {
             return true;
         } else if (o != null && getClass() == o.getClass()) {
-            Transactions that = (Transactions) o;
+            Transaction that = (Transaction) o;
 
             return ((this.amount == null ? that.getAmount() == null : this.amount.equals(that.getAmount())) &&
                     (this.destAcct == null ? that.getDestAcct() == null : this.destAcct.equals(that.getDestAcct())) &&

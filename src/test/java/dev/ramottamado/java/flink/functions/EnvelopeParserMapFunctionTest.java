@@ -22,16 +22,16 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.Customers;
+import dev.ramottamado.java.flink.schema.Customer;
 
 public class EnvelopeParserMapFunctionTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private static String dummyEnvelope;
-    private static Customers expected;
+    private static Customer expected;
 
     @BeforeClass
     public static void prepareTest() {
-        expected = new Customers();
+        expected = new Customer();
         expected.setCif("029817127819");
         expected.setAcctNumber("067637881");
         expected.setCity("Jakarta");
@@ -63,9 +63,9 @@ public class EnvelopeParserMapFunctionTest {
         ObjectNode dummyObjectNode = mapper.createObjectNode();
         dummyObjectNode.set("value", mapper.readTree(dummyEnvelope));
 
-        EnvelopeParserMapFunction<Customers> customersEnvelopeParserMapFunction =
-                new EnvelopeParserMapFunction<>(Customers.class);
-        Customers actual = customersEnvelopeParserMapFunction.map(dummyObjectNode);
+        EnvelopeParserMapFunction<Customer> customersEnvelopeParserMapFunction =
+                new EnvelopeParserMapFunction<>(Customer.class);
+        Customer actual = customersEnvelopeParserMapFunction.map(dummyObjectNode);
 
         Assert.assertEquals(expected, actual);
     }

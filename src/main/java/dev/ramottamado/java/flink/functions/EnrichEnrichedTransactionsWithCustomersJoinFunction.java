@@ -25,41 +25,41 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.EnrichedTransactionsWithTimestamp;
+import dev.ramottamado.java.flink.schema.Customer;
+import dev.ramottamado.java.flink.schema.EnrichedTransaction;
+import dev.ramottamado.java.flink.schema.EnrichedTransactionWithTimestamp;
 
 /**
  * The {@link EnrichEnrichedTransactionsWithCustomersJoinFunction} implements {@link KeyedCoProcessFunction}
- * to join the {@link EnrichedTransactions} stream with {@link Customers} stream.
+ * to join the {@link EnrichedTransaction} stream with {@link Customer} stream.
  *
  * @author Tamado Sitohang
  * @since  1.0
  */
 public class EnrichEnrichedTransactionsWithCustomersJoinFunction
-        extends KeyedCoProcessFunction<String, EnrichedTransactions, Customers, EnrichedTransactions> {
+        extends KeyedCoProcessFunction<String, EnrichedTransaction, Customer, EnrichedTransaction> {
     private static final long serialVersionUID = 12319238113L;
-    private ValueState<Customers> referenceDataState;
-    private ValueState<EnrichedTransactionsWithTimestamp> latestEnrichedTrx;
+    private ValueState<Customer> referenceDataState;
+    private ValueState<EnrichedTransactionWithTimestamp> latestEnrichedTrx;
 
     @Override
     public void open(Configuration parameters) {
-        ValueStateDescriptor<Customers> cDescriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<Customer> cDescriptor = new ValueStateDescriptor<>(
                 "customers",
-                TypeInformation.of(Customers.class));
+                TypeInformation.of(Customer.class));
 
-        ValueStateDescriptor<EnrichedTransactionsWithTimestamp> eDescriptor = new ValueStateDescriptor<>(
+        ValueStateDescriptor<EnrichedTransactionWithTimestamp> eDescriptor = new ValueStateDescriptor<>(
                 "enrichedTransactions",
-                TypeInformation.of(EnrichedTransactionsWithTimestamp.class));
+                TypeInformation.of(EnrichedTransactionWithTimestamp.class));
 
         referenceDataState = getRuntimeContext().getState(cDescriptor);
         latestEnrichedTrx = getRuntimeContext().getState(eDescriptor);
     }
 
     @Override
-    public void processElement1(EnrichedTransactions value, Context ctx, Collector<EnrichedTransactions> out)
+    public void processElement1(EnrichedTransaction value, Context ctx, Collector<EnrichedTransaction> out)
             throws Exception {
-        Customers customersState = referenceDataState.value();
+        Customer customersState = referenceDataState.value();
 
         if (Objects.equals(ctx.getCurrentKey(), "NULL")) {
             out.collect(value);
@@ -67,7 +67,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
             value.setDestName(customersState.getFirstName() + " " + customersState.getLastName());
             out.collect(value);
         } else {
-            EnrichedTransactionsWithTimestamp etxWithTimestamp = new EnrichedTransactionsWithTimestamp();
+            EnrichedTransactionWithTimestamp etxWithTimestamp = new EnrichedTransactionWithTimestamp();
             etxWithTimestamp.setTimestamp(ctx.timestamp());
             etxWithTimestamp.setEtx(value);
 
@@ -77,16 +77,16 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement2(Customers value, Context ctx, Collector<EnrichedTransactions> collector)
+    public void processElement2(Customer value, Context ctx, Collector<EnrichedTransaction> collector)
             throws Exception {
         referenceDataState.update(value);
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransactions> out) throws Exception {
-        EnrichedTransactionsWithTimestamp lastEtx = latestEnrichedTrx.value();
-        Customers cust = referenceDataState.value();
-        EnrichedTransactions etx = lastEtx.getEtx();
+    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransaction> out) throws Exception {
+        EnrichedTransactionWithTimestamp lastEtx = latestEnrichedTrx.value();
+        Customer cust = referenceDataState.value();
+        EnrichedTransaction etx = lastEtx.getEtx();
 
         if (cust != null) {
             etx.setDestName((cust.getFirstName() + " " + cust.getLastName()).trim());

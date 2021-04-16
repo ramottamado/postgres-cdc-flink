@@ -27,25 +27,25 @@ import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.Customer;
+import dev.ramottamado.java.flink.schema.EnrichedTransaction;
 
 public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
-    private KeyedTwoInputStreamOperatorTestHarness<String, EnrichedTransactions, Customers, EnrichedTransactions> testHarness;
-    private Customers testCustomer;
-    private EnrichedTransactions testEnrichedTrx;
-    private EnrichedTransactions testEnrichedTrxResult;
+    private KeyedTwoInputStreamOperatorTestHarness<String, EnrichedTransaction, Customer, EnrichedTransaction> testHarness;
+    private Customer testCustomer;
+    private EnrichedTransaction testEnrichedTrx;
+    private EnrichedTransaction testEnrichedTrxResult;
 
     @Before
     public void prepareTest() throws Exception {
-        testCustomer = new Customers();
+        testCustomer = new Customer();
         testCustomer.setAcctNumber("0002");
         testCustomer.setCif("002");
         testCustomer.setCity("Jakarta");
         testCustomer.setFirstName("Kamal");
         testCustomer.setLastName("Rasyid");
 
-        testEnrichedTrx = new EnrichedTransactions();
+        testEnrichedTrx = new EnrichedTransaction();
         testEnrichedTrx.setAmount(10000.0);
         testEnrichedTrx.setDestAcct("0002");
         testEnrichedTrx.setSrcAcct("0001");
@@ -54,7 +54,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
         testEnrichedTrx.setCif("001");
         testEnrichedTrx.setSrcName("Tamado Sitohang");
 
-        testEnrichedTrxResult = new EnrichedTransactions();
+        testEnrichedTrxResult = new EnrichedTransaction();
         testEnrichedTrxResult.setAmount(10000.0);
         testEnrichedTrxResult.setDestAcct("0002");
         testEnrichedTrxResult.setSrcAcct("0001");
@@ -69,8 +69,8 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunctionTest {
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichEnrichedTransactionsWithCustomersJoinFunction),
-                EnrichedTransactions::getDestAcctAsKey,
-                Customers::getAcctNumber,
+                EnrichedTransaction::getDestAcctAsKey,
+                Customer::getAcctNumber,
                 Types.STRING);
 
         testHarness.open();

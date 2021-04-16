@@ -24,13 +24,13 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonPro
 import dev.ramottamado.java.flink.annotation.Public;
 
 /**
- * Customers POJO.
+ * Customer POJO.
  *
  * @author Tamado Sitohang
  * @since  1.0
  */
 @Public
-public class Customers implements Serializable {
+public class Customer implements Serializable {
     @JsonIgnore
     private static final long serialVersionUID = -1999L;
 
@@ -50,12 +50,12 @@ public class Customers implements Serializable {
     private String city;
 
     /**
-     * Customers POJO.
+     * Customer POJO.
      *
      * @author Tamado Sitohang
      * @since  1.0
      */
-    public Customers() {
+    public Customer() {
     }
 
     @JsonProperty("cif")
@@ -120,7 +120,7 @@ public class Customers implements Serializable {
         if (this == o) {
             return true;
         } else if (o != null && getClass() == o.getClass()) {
-            Customers that = (Customers) o;
+            Customer that = (Customer) o;
 
             return ((this.acctNumber == null ? that.getAcctNumber() == null
                     : this.acctNumber.equals(that.getAcctNumber())) &&

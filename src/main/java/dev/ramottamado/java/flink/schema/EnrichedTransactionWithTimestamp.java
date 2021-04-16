@@ -20,25 +20,25 @@ import dev.ramottamado.java.flink.annotation.PublicEvolving;
 import dev.ramottamado.java.flink.api.schema.ClassWithTimestamp;
 
 /**
- * Transactions POJO with timestamp.
+ * Enriched transaction POJO with timestamp.
  *
  * @author Tamado Sitohang
  * @since  1.0
  */
 @PublicEvolving
-public class TransactionsWithTimestamp extends ClassWithTimestamp {
-    private static final long serialVersionUID = -2003L;
+public class EnrichedTransactionWithTimestamp extends ClassWithTimestamp {
+    private static final long serialVersionUID = -2005L;
     private long timestamp;
-    private Transactions trx;
+    private EnrichedTransaction etx;
 
     /**
-     * Transactions POJO with timestamp.
+     * Enriched transaction POJO with timestamp.
      *
      * @author Tamado Sitohang
      * @since  1.0
      */
     @PublicEvolving
-    public TransactionsWithTimestamp() {
+    public EnrichedTransactionWithTimestamp() {
     }
 
     @Override
@@ -51,12 +51,12 @@ public class TransactionsWithTimestamp extends ClassWithTimestamp {
         this.timestamp = timestamp;
     }
 
-    public Transactions getTrx() {
-        return trx;
+    public EnrichedTransaction getEtx() {
+        return etx;
     }
 
-    public void setTrx(Transactions trx) {
-        this.trx = trx;
+    public void setEtx(EnrichedTransaction trx) {
+        this.etx = trx;
     }
 
     @Override
@@ -64,9 +64,9 @@ public class TransactionsWithTimestamp extends ClassWithTimestamp {
         if (this == o) {
             return true;
         } else if (o != null && getClass() == o.getClass()) {
-            TransactionsWithTimestamp that = (TransactionsWithTimestamp) o;
+            EnrichedTransactionWithTimestamp that = (EnrichedTransactionWithTimestamp) o;
 
-            return ((this.trx == null ? that.getTrx() == null : this.trx.equals(that.getTrx()))
+            return ((this.etx == null ? that.getEtx() == null : this.etx.equals(that.getEtx()))
                     && this.timestamp == that.getTimestamp());
         }
 

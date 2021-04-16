@@ -27,33 +27,33 @@ import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.Customer;
+import dev.ramottamado.java.flink.schema.EnrichedTransaction;
+import dev.ramottamado.java.flink.schema.Transaction;
 
 public class EnrichTransactionsWithCustomersJoinFunctionTest {
-    private KeyedTwoInputStreamOperatorTestHarness<String, Transactions, Customers, EnrichedTransactions> testHarness;
-    private Customers testCustomer;
-    private Transactions testTrx;
-    private EnrichedTransactions testEnrichedTrx;
+    private KeyedTwoInputStreamOperatorTestHarness<String, Transaction, Customer, EnrichedTransaction> testHarness;
+    private Customer testCustomer;
+    private Transaction testTrx;
+    private EnrichedTransaction testEnrichedTrx;
 
     @Before
     public void prepareTest() throws Exception {
-        testCustomer = new Customers();
+        testCustomer = new Customer();
         testCustomer.setAcctNumber("0001");
         testCustomer.setCif("001");
         testCustomer.setCity("Bandung");
         testCustomer.setFirstName("Tamado");
         testCustomer.setLastName("Sitohang");
 
-        testTrx = new Transactions();
+        testTrx = new Transaction();
         testTrx.setAmount(10000.0);
         testTrx.setDestAcct("0002");
         testTrx.setSrcAcct("0001");
         testTrx.setTrxTimestamp(Instant.parse("2021-01-01T12:00:00.00Z"));
         testTrx.setTrxType("TRANSFER");
 
-        testEnrichedTrx = new EnrichedTransactions();
+        testEnrichedTrx = new EnrichedTransaction();
         testEnrichedTrx.setAmount(10000.0);
         testEnrichedTrx.setDestAcct("0002");
         testEnrichedTrx.setSrcAcct("0001");
@@ -67,8 +67,8 @@ public class EnrichTransactionsWithCustomersJoinFunctionTest {
 
         testHarness = new KeyedTwoInputStreamOperatorTestHarness<>(
                 new KeyedCoProcessOperator<>(enrichTransactionsWithCustomersJoinFunction),
-                Transactions::getSrcAcct,
-                Customers::getAcctNumber,
+                Transaction::getSrcAcct,
+                Customer::getAcctNumber,
                 Types.STRING);
 
         testHarness.open();

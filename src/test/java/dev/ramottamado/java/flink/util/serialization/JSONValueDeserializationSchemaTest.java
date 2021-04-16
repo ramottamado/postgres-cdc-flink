@@ -25,8 +25,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class JSONValueDeserializationSchemaTest {
-    private JSONValueDeserializationSchema jsonValueDeserializationSchemaTest = new JSONValueDeserializationSchema();
-    private ObjectMapper mapper = new ObjectMapper();
+    private final JSONValueDeserializationSchema jsonValueDeserializationSchemaTest = new JSONValueDeserializationSchema();
+    private final ObjectMapper mapper = new ObjectMapper();
     private static String dummyEnvelope;
     private static byte[] message;
 
@@ -65,8 +65,7 @@ public class JSONValueDeserializationSchemaTest {
 
     @Test
     public void testDeserializeNull() throws Exception {
-        message = null;
-        ObjectNode actual = jsonValueDeserializationSchemaTest.deserialize(message);
+        ObjectNode actual = jsonValueDeserializationSchemaTest.deserialize(null);
         ObjectNode expected = mapper.createObjectNode();
 
         Assert.assertNotNull(actual);
@@ -74,16 +73,15 @@ public class JSONValueDeserializationSchemaTest {
     }
 
     @Test
-    public void testIsEndOfStream() throws Exception {
+    public void testIsEndOfStream() {
         ObjectNode nextElement = mapper.createObjectNode();
         boolean actual = jsonValueDeserializationSchemaTest.isEndOfStream(nextElement);
 
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(false, actual);
+        Assert.assertFalse(actual);
     }
 
     @Test
-    public void testGetProducedType() throws Exception {
+    public void testGetProducedType() {
         TypeInformation<ObjectNode> actual = jsonValueDeserializationSchemaTest.getProducedType();
 
         Assert.assertNotNull(actual);

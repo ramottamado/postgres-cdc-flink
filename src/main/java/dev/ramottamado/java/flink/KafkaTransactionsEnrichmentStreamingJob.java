@@ -39,9 +39,9 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 import dev.ramottamado.java.flink.annotation.Public;
 import dev.ramottamado.java.flink.functions.EnrichedTransactionsToStringMapFunction;
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.Customer;
+import dev.ramottamado.java.flink.schema.EnrichedTransaction;
+import dev.ramottamado.java.flink.schema.Transaction;
 import dev.ramottamado.java.flink.util.ParameterUtils;
 import dev.ramottamado.java.flink.util.kafka.KafkaProperties;
 import dev.ramottamado.java.flink.util.serialization.DebeziumJSONEnvelopeDeserializationSchema;
@@ -49,7 +49,7 @@ import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsKafkaSe
 
 /**
  * The class {@code KafkaTransactionsEnrichmentStreamingJob} provides {@link AbstractTransactionsEnrichmentStreamingJob}
- * for enriching {@link Transactions} data using Flink.
+ * for enriching {@link Transaction} data using Flink.
  *
  * @author Tamado Sitohang
  * @see    AbstractTransactionsEnrichmentStreamingJob
@@ -57,11 +57,11 @@ import dev.ramottamado.java.flink.util.serialization.EnrichedTransactionsKafkaSe
  */
 @Public
 public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransactionsEnrichmentStreamingJob {
-    private final DebeziumJSONEnvelopeDeserializationSchema<Transactions> tDeserializationSchema =
-            new DebeziumJSONEnvelopeDeserializationSchema<>(Transactions.class);
+    private final DebeziumJSONEnvelopeDeserializationSchema<Transaction> tDeserializationSchema =
+            new DebeziumJSONEnvelopeDeserializationSchema<>(Transaction.class);
 
-    private final DebeziumJSONEnvelopeDeserializationSchema<Customers> cDeserializationSchema =
-            new DebeziumJSONEnvelopeDeserializationSchema<>(Customers.class);
+    private final DebeziumJSONEnvelopeDeserializationSchema<Customer> cDeserializationSchema =
+            new DebeziumJSONEnvelopeDeserializationSchema<>(Customer.class);
 
     private final EnrichedTransactionsKafkaSerializationSchema etxSerializationSchema =
             new EnrichedTransactionsKafkaSerializationSchema("enriched_transactions");
@@ -79,10 +79,10 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
     }
 
     @Override
-    public final DataStream<Transactions> readTransactionsCdcStream() throws RuntimeException {
+    public final DataStream<Transaction> readTransactionsCdcStream() throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<Transactions> tKafkaConsumer = new FlinkKafkaConsumer<>(
+        FlinkKafkaConsumer<Transaction> tKafkaConsumer = new FlinkKafkaConsumer<>(
                 params.getRequired(KAFKA_SOURCE_TOPIC_1),
                 tDeserializationSchema,
                 properties);
@@ -93,11 +93,11 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
     }
 
     @Override
-    public final DataStream<Customers> readCustomersCdcStream()
+    public final DataStream<Customer> readCustomersCdcStream()
             throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<Customers> cKafkaConsumer =
+        FlinkKafkaConsumer<Customer> cKafkaConsumer =
                 new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties);
 
         setFlinkKafkaConsumerOffsetStrategy(params, cKafkaConsumer);
@@ -106,11 +106,11 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
     }
 
     @Override
-    public final void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactions> enrichedTrxStream)
+    public final void writeEnrichedTransactionsOutput(DataStream<EnrichedTransaction> enrichedTrxStream)
             throws RuntimeException {
         Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaProducer<EnrichedTransactions> etxKafkaProducer = new FlinkKafkaProducer<>(
+        FlinkKafkaProducer<EnrichedTransaction> etxKafkaProducer = new FlinkKafkaProducer<>(
                 params.get(KAFKA_TARGET_TOPIC, "enriched_transactions"),
                 etxSerializationSchema,
                 properties,

@@ -22,27 +22,27 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.Customer;
+import dev.ramottamado.java.flink.schema.Transaction;
 
 public class DebeziumJSONEnvelopeDeserializationSchemaTest {
     private DebeziumJSONEnvelopeDeserializationSchema<?> debeziumJSONEnvelopeDeserializationSchema;
-    private Customers cust;
-    private Transactions trx;
+    private Customer cust;
+    private Transaction trx;
     private String dummyCustEnvelope;
     private String dummyTrxEnvelope;
     private byte[] message;
 
     @Before
     public void prepareTest() {
-        cust = new Customers();
+        cust = new Customer();
         cust.setAcctNumber("0001");
         cust.setCif("001");
         cust.setCity("Bandung");
         cust.setFirstName("Tamado");
         cust.setLastName("Sitohang");
 
-        trx = new Transactions();
+        trx = new Transaction();
         trx.setAmount(10000.0);
         trx.setDestAcct("0002");
         trx.setSrcAcct("0001");
@@ -90,12 +90,10 @@ public class DebeziumJSONEnvelopeDeserializationSchemaTest {
 
     @Test
     public void testDeserializeCustomer() throws Exception {
-        debeziumJSONEnvelopeDeserializationSchema =
-                new DebeziumJSONEnvelopeDeserializationSchema<Customers>(Customers.class);
-
+        debeziumJSONEnvelopeDeserializationSchema = new DebeziumJSONEnvelopeDeserializationSchema<>(Customer.class);
         message = dummyCustEnvelope.getBytes();
 
-        Customers actual = (Customers) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
+        Customer actual = (Customer) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(cust, actual);
@@ -103,12 +101,10 @@ public class DebeziumJSONEnvelopeDeserializationSchemaTest {
 
     @Test
     public void testDeserializeTransaction() throws Exception {
-        debeziumJSONEnvelopeDeserializationSchema =
-                new DebeziumJSONEnvelopeDeserializationSchema<Transactions>(Transactions.class);
-
+        debeziumJSONEnvelopeDeserializationSchema = new DebeziumJSONEnvelopeDeserializationSchema<>(Transaction.class);
         message = dummyTrxEnvelope.getBytes();
 
-        Transactions actual = (Transactions) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
+        Transaction actual = (Transaction) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(trx, actual);
@@ -116,12 +112,9 @@ public class DebeziumJSONEnvelopeDeserializationSchemaTest {
 
     @Test
     public void testDeserializeNull() throws Exception {
-        message = null;
+        debeziumJSONEnvelopeDeserializationSchema = new DebeziumJSONEnvelopeDeserializationSchema<>(Transaction.class);
 
-        debeziumJSONEnvelopeDeserializationSchema =
-                new DebeziumJSONEnvelopeDeserializationSchema<Transactions>(Transactions.class);
-
-        Transactions actual = (Transactions) debeziumJSONEnvelopeDeserializationSchema.deserialize(message);
+        Transaction actual = (Transaction) debeziumJSONEnvelopeDeserializationSchema.deserialize(null);
 
         Assert.assertNotNull(actual);
         Assert.assertNull(actual.getSrcAcct());

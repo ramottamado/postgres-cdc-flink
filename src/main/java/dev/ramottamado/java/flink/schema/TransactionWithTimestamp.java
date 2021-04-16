@@ -20,25 +20,25 @@ import dev.ramottamado.java.flink.annotation.PublicEvolving;
 import dev.ramottamado.java.flink.api.schema.ClassWithTimestamp;
 
 /**
- * Enriched transactions POJO with timestamp.
+ * Transaction POJO with timestamp.
  *
  * @author Tamado Sitohang
  * @since  1.0
  */
 @PublicEvolving
-public class EnrichedTransactionsWithTimestamp extends ClassWithTimestamp {
-    private static final long serialVersionUID = -2005L;
+public class TransactionWithTimestamp extends ClassWithTimestamp {
+    private static final long serialVersionUID = -2003L;
     private long timestamp;
-    private EnrichedTransactions etx;
+    private Transaction trx;
 
     /**
-     * Enriched transactions POJO with timestamp.
+     * Transaction POJO with timestamp.
      *
      * @author Tamado Sitohang
      * @since  1.0
      */
     @PublicEvolving
-    public EnrichedTransactionsWithTimestamp() {
+    public TransactionWithTimestamp() {
     }
 
     @Override
@@ -51,12 +51,12 @@ public class EnrichedTransactionsWithTimestamp extends ClassWithTimestamp {
         this.timestamp = timestamp;
     }
 
-    public EnrichedTransactions getEtx() {
-        return etx;
+    public Transaction getTrx() {
+        return trx;
     }
 
-    public void setEtx(EnrichedTransactions trx) {
-        this.etx = trx;
+    public void setTrx(Transaction trx) {
+        this.trx = trx;
     }
 
     @Override
@@ -64,9 +64,9 @@ public class EnrichedTransactionsWithTimestamp extends ClassWithTimestamp {
         if (this == o) {
             return true;
         } else if (o != null && getClass() == o.getClass()) {
-            EnrichedTransactionsWithTimestamp that = (EnrichedTransactionsWithTimestamp) o;
+            TransactionWithTimestamp that = (TransactionWithTimestamp) o;
 
-            return ((this.etx == null ? that.getEtx() == null : this.etx.equals(that.getEtx()))
+            return ((this.trx == null ? that.getTrx() == null : this.trx.equals(that.getTrx()))
                     && this.timestamp == that.getTimestamp());
         }
 

@@ -25,13 +25,13 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import dev.ramottamado.java.flink.annotation.Public;
 import dev.ramottamado.java.flink.functions.EnrichEnrichedTransactionsWithCustomersJoinFunction;
 import dev.ramottamado.java.flink.functions.EnrichTransactionsWithCustomersJoinFunction;
-import dev.ramottamado.java.flink.schema.Customers;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
-import dev.ramottamado.java.flink.schema.Transactions;
+import dev.ramottamado.java.flink.schema.Customer;
+import dev.ramottamado.java.flink.schema.EnrichedTransaction;
+import dev.ramottamado.java.flink.schema.Transaction;
 
 /**
  * The abstract class {@code AbstractTransactionsEnrichmentStreamingJob} provides base class, logic and pipeline for
- * enriching {@link Transactions} data using Flink. The core pipeline and functionality is encapsulated here, while
+ * enriching {@link Transaction} data using Flink. The core pipeline and functionality is encapsulated here, while
  * subclasses have to implement input and output methods. Check {@link KafkaTransactionsEnrichmentStreamingJob} for the
  * implementation using data stream from Kafka.
  *
@@ -45,31 +45,31 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
     public StreamExecutionEnvironment env;
 
     /**
-     * Method to get {@link Transactions} data stream.
+     * Method to get {@link Transaction} data stream.
      *
-     * @return                  the {@link Transactions} data stream
+     * @return                  the {@link Transaction} data stream
      * @throws RuntimeException if input cannot be read.
      * @since                   1.0
      */
-    public abstract DataStream<Transactions> readTransactionsCdcStream() throws RuntimeException;
+    public abstract DataStream<Transaction> readTransactionsCdcStream() throws RuntimeException;
 
     /**
-     * Method to get {@link Customers} data stream.
+     * Method to get {@link Customer} data stream.
      *
-     * @return                  the {@link Customers} data stream
+     * @return                  the {@link Customer} data stream
      * @throws RuntimeException if input cannot be read.
      * @since                   1.0
      */
-    public abstract DataStream<Customers> readCustomersCdcStream() throws RuntimeException;
+    public abstract DataStream<Customer> readCustomersCdcStream() throws RuntimeException;
 
     /**
-     * Method to write {@link EnrichedTransactions} data stream to sink.
+     * Method to write {@link EnrichedTransaction} data stream to sink.
      *
-     * @param  enrichedTrxStream the {@link EnrichedTransactions} data stream
+     * @param  enrichedTrxStream the {@link EnrichedTransaction} data stream
      * @throws RuntimeException  if output cannot be written
      * @since                    1.0
      */
-    public abstract void writeEnrichedTransactionsOutput(DataStream<EnrichedTransactions> enrichedTrxStream)
+    public abstract void writeEnrichedTransactionsOutput(DataStream<EnrichedTransaction> enrichedTrxStream)
             throws RuntimeException;
 
     /**
@@ -83,8 +83,8 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
             throws RuntimeException;
 
     /**
-     * The core logic and pipeline for enriching {@link Transactions} data stream using data from
-     * {@link Customers}.
+     * The core logic and pipeline for enriching {@link Transaction} data stream using data from
+     * {@link Customer}.
      *
      * @return                  the Flink {@link StreamExecutionEnvironment} environment
      * @throws RuntimeException if input/output cannot be read/write
@@ -93,19 +93,19 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
     public final StreamExecutionEnvironment createApplicationPipeline() throws RuntimeException {
         env = createExecutionEnvironment();
 
-        KeyedStream<Customers, String> keyedCustomersCdcStream = readCustomersCdcStream()
-                .keyBy(Customers::getAcctNumber);
+        KeyedStream<Customer, String> keyedCustomersCdcStream = readCustomersCdcStream()
+                .keyBy(Customer::getAcctNumber);
 
-        KeyedStream<Transactions, String> keyedTransactionsStream = readTransactionsCdcStream()
-                .keyBy(Transactions::getSrcAcct);
+        KeyedStream<Transaction, String> keyedTransactionsStream = readTransactionsCdcStream()
+                .keyBy(Transaction::getSrcAcct);
 
-        KeyedStream<EnrichedTransactions, String> enrichedTrxStream = keyedTransactionsStream
+        KeyedStream<EnrichedTransaction, String> enrichedTrxStream = keyedTransactionsStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions")
-                .keyBy(EnrichedTransactions::getDestAcctAsKey);
+                .keyBy(EnrichedTransaction::getDestAcctAsKey);
 
-        SingleOutputStreamOperator<EnrichedTransactions> enrichedTrxStream2 = enrichedTrxStream
+        SingleOutputStreamOperator<EnrichedTransaction> enrichedTrxStream2 = enrichedTrxStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichEnrichedTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions_2");

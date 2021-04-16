@@ -24,10 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.ramottamado.java.flink.annotation.PublicEvolving;
-import dev.ramottamado.java.flink.schema.EnrichedTransactions;
+import dev.ramottamado.java.flink.schema.EnrichedTransaction;
 
 /**
- * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize {@link EnrichedTransactions}
+ * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize {@link EnrichedTransaction}
  * into {@link ProducerRecord} for Apache Kafka.
  *
  * @author Tamado Sitohang
@@ -35,7 +35,7 @@ import dev.ramottamado.java.flink.schema.EnrichedTransactions;
  */
 @PublicEvolving
 public class EnrichedTransactionsKafkaSerializationSchema
-        implements KafkaSerializationSchema<EnrichedTransactions> {
+        implements KafkaSerializationSchema<EnrichedTransaction> {
     private final static long serialVersionUID = -102983L;
     private final static Logger logger = LoggerFactory.getLogger(EnrichedTransactionsKafkaSerializationSchema.class);
     private final ObjectMapper mapper = new ObjectMapper();
@@ -43,7 +43,7 @@ public class EnrichedTransactionsKafkaSerializationSchema
 
     /**
      * The {@link EnrichedTransactionsKafkaSerializationSchema} describes how to serialize
-     * {@link EnrichedTransactions} into {@link ProducerRecord} for Apache Kafka.
+     * {@link EnrichedTransaction} into {@link ProducerRecord} for Apache Kafka.
      *
      * @param  topic the Kafka topic to publish the resulting records
      * @author       Tamado Sitohang
@@ -55,7 +55,7 @@ public class EnrichedTransactionsKafkaSerializationSchema
     }
 
     @Override
-    public ProducerRecord<byte[], byte[]> serialize(EnrichedTransactions element, Long timestamp) {
+    public ProducerRecord<byte[], byte[]> serialize(EnrichedTransaction element, Long timestamp) {
         byte[] message = null;
 
         try {
