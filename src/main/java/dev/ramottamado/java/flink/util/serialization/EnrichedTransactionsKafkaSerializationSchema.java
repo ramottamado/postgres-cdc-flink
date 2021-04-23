@@ -49,18 +49,18 @@ public class EnrichedTransactionsKafkaSerializationSchema
      * @author       Tamado Sitohang
      * @since        1.0
      */
-    public EnrichedTransactionsKafkaSerializationSchema(String topic) {
+    public EnrichedTransactionsKafkaSerializationSchema(final String topic) {
         super();
         this.topic = topic;
     }
 
     @Override
-    public ProducerRecord<byte[], byte[]> serialize(EnrichedTransaction element, Long timestamp) {
+    public ProducerRecord<byte[], byte[]> serialize(final EnrichedTransaction element, final Long timestamp) {
         byte[] message = null;
 
         try {
             message = mapper.writeValueAsBytes(element);
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             logger.error("Error processing JSON", e);
         }
 

@@ -63,14 +63,14 @@ public class TimestampSerializer extends StdSerializer<Instant> {
      * @since       1.0
      */
     @VisibleForTesting
-    public TimestampSerializer(Class<Instant> type) {
+    public TimestampSerializer(final Class<Instant> type) {
         super(type);
     }
 
     @Override
-    public void serialize(Instant value, JsonGenerator jg, SerializerProvider sp)
+    public void serialize(final Instant value, final JsonGenerator jg, final SerializerProvider sp)
             throws IOException, DateTimeException {
-        String parsedTimestamp = formatter.format(value);
+        final String parsedTimestamp = formatter.format(value);
 
         jg.writeString(parsedTimestamp);
     }

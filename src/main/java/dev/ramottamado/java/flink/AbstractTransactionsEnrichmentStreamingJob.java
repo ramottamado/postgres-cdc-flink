@@ -93,19 +93,19 @@ public abstract class AbstractTransactionsEnrichmentStreamingJob {
     public final StreamExecutionEnvironment createApplicationPipeline() throws RuntimeException {
         env = createExecutionEnvironment();
 
-        KeyedStream<Customer, String> keyedCustomersCdcStream = readCustomersCdcStream()
+        final KeyedStream<Customer, String> keyedCustomersCdcStream = readCustomersCdcStream()
                 .keyBy(Customer::getAcctNumber);
 
-        KeyedStream<Transaction, String> keyedTransactionsStream = readTransactionsCdcStream()
+        final KeyedStream<Transaction, String> keyedTransactionsStream = readTransactionsCdcStream()
                 .keyBy(Transaction::getSrcAcct);
 
-        KeyedStream<EnrichedTransaction, String> enrichedTrxStream = keyedTransactionsStream
+        final KeyedStream<EnrichedTransaction, String> enrichedTrxStream = keyedTransactionsStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions")
                 .keyBy(EnrichedTransaction::getDestAcctAsKey);
 
-        SingleOutputStreamOperator<EnrichedTransaction> enrichedTrxStream2 = enrichedTrxStream
+        final SingleOutputStreamOperator<EnrichedTransaction> enrichedTrxStream2 = enrichedTrxStream
                 .connect(keyedCustomersCdcStream)
                 .process(new EnrichEnrichedTransactionsWithCustomersJoinFunction())
                 .uid("enriched_transactions_2");

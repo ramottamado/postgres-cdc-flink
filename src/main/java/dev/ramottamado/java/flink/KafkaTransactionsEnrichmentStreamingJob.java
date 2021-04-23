@@ -66,8 +66,9 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
     private final EnrichedTransactionsKafkaSerializationSchema etxSerializationSchema =
             new EnrichedTransactionsKafkaSerializationSchema("enriched_transactions");
 
-    private void setFlinkKafkaConsumerOffsetStrategy(ParameterTool params, FlinkKafkaConsumer<?> kafkaConsumer) {
-        String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
+    private void setFlinkKafkaConsumerOffsetStrategy(final ParameterTool params,
+            final FlinkKafkaConsumer<?> kafkaConsumer) {
+        final String kafkaOffsetStrategy = params.get(KAFKA_OFFSET_STRATEGY, "inherit");
 
         if (Objects.equals(kafkaOffsetStrategy, "earliest")) {
             kafkaConsumer.setStartFromEarliest();
@@ -80,9 +81,9 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
 
     @Override
     public final DataStream<Transaction> readTransactionsCdcStream() throws RuntimeException {
-        Properties properties = KafkaProperties.getProperties(params);
+        final Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<Transaction> tKafkaConsumer = new FlinkKafkaConsumer<>(
+        final FlinkKafkaConsumer<Transaction> tKafkaConsumer = new FlinkKafkaConsumer<>(
                 params.getRequired(KAFKA_SOURCE_TOPIC_1),
                 tDeserializationSchema,
                 properties);
@@ -95,9 +96,9 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
     @Override
     public final DataStream<Customer> readCustomersCdcStream()
             throws RuntimeException {
-        Properties properties = KafkaProperties.getProperties(params);
+        final Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaConsumer<Customer> cKafkaConsumer =
+        final FlinkKafkaConsumer<Customer> cKafkaConsumer =
                 new FlinkKafkaConsumer<>(params.getRequired(KAFKA_SOURCE_TOPIC_2), cDeserializationSchema, properties);
 
         setFlinkKafkaConsumerOffsetStrategy(params, cKafkaConsumer);
@@ -106,11 +107,11 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
     }
 
     @Override
-    public final void writeEnrichedTransactionsOutput(DataStream<EnrichedTransaction> enrichedTrxStream)
+    public final void writeEnrichedTransactionsOutput(final DataStream<EnrichedTransaction> enrichedTrxStream)
             throws RuntimeException {
-        Properties properties = KafkaProperties.getProperties(params);
+        final Properties properties = KafkaProperties.getProperties(params);
 
-        FlinkKafkaProducer<EnrichedTransaction> etxKafkaProducer = new FlinkKafkaProducer<>(
+        final FlinkKafkaProducer<EnrichedTransaction> etxKafkaProducer = new FlinkKafkaProducer<>(
                 params.get(KAFKA_TARGET_TOPIC, "enriched_transactions"),
                 etxSerializationSchema,
                 properties,
@@ -124,9 +125,9 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
 
     @Override
     public final StreamExecutionEnvironment createExecutionEnvironment() throws RuntimeException {
-        String checkpointPath = params.getRequired(CHECKPOINT_PATH);
-        StateBackend stateBackend = new FsStateBackend(checkpointPath);
-        Configuration conf = new Configuration();
+        final String checkpointPath = params.getRequired(CHECKPOINT_PATH);
+        final StateBackend stateBackend = new FsStateBackend(checkpointPath);
+        final Configuration conf = new Configuration();
 
         conf.setString("state.backend", "filesystem");
         conf.setString("state.checkpoints.dir", checkpointPath);
@@ -151,7 +152,7 @@ public class KafkaTransactionsEnrichmentStreamingJob extends AbstractTransaction
      * @param  args      the arguments to pass into the application
      * @throws Exception if some errors happened
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         params = ParameterUtils.parseArgs(args);
 
         new KafkaTransactionsEnrichmentStreamingJob()

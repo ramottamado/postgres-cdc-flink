@@ -43,12 +43,12 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     private ValueState<EnrichedTransactionWithTimestamp> latestEnrichedTrx;
 
     @Override
-    public void open(Configuration parameters) {
-        ValueStateDescriptor<Customer> cDescriptor = new ValueStateDescriptor<>(
+    public void open(final Configuration parameters) {
+        final ValueStateDescriptor<Customer> cDescriptor = new ValueStateDescriptor<>(
                 "customers",
                 TypeInformation.of(Customer.class));
 
-        ValueStateDescriptor<EnrichedTransactionWithTimestamp> eDescriptor = new ValueStateDescriptor<>(
+        final ValueStateDescriptor<EnrichedTransactionWithTimestamp> eDescriptor = new ValueStateDescriptor<>(
                 "enrichedTransactions",
                 TypeInformation.of(EnrichedTransactionWithTimestamp.class));
 
@@ -57,9 +57,10 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement1(EnrichedTransaction value, Context ctx, Collector<EnrichedTransaction> out)
+    public void processElement1(final EnrichedTransaction value, final Context ctx,
+            final Collector<EnrichedTransaction> out)
             throws Exception {
-        Customer customersState = referenceDataState.value();
+        final Customer customersState = referenceDataState.value();
 
         if (Objects.equals(ctx.getCurrentKey(), "NULL")) {
             out.collect(value);
@@ -67,7 +68,7 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
             value.setDestName(customersState.getFirstName() + " " + customersState.getLastName());
             out.collect(value);
         } else {
-            EnrichedTransactionWithTimestamp etxWithTimestamp = new EnrichedTransactionWithTimestamp();
+            final EnrichedTransactionWithTimestamp etxWithTimestamp = new EnrichedTransactionWithTimestamp();
             etxWithTimestamp.setTimestamp(ctx.timestamp());
             etxWithTimestamp.setEtx(value);
 
@@ -77,16 +78,17 @@ public class EnrichEnrichedTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement2(Customer value, Context ctx, Collector<EnrichedTransaction> collector)
+    public void processElement2(final Customer value, final Context ctx, final Collector<EnrichedTransaction> collector)
             throws Exception {
         referenceDataState.update(value);
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransaction> out) throws Exception {
-        EnrichedTransactionWithTimestamp lastEtx = latestEnrichedTrx.value();
-        Customer cust = referenceDataState.value();
-        EnrichedTransaction etx = lastEtx.getEtx();
+    public void onTimer(final long timestamp, final OnTimerContext ctx, final Collector<EnrichedTransaction> out)
+            throws Exception {
+        final EnrichedTransactionWithTimestamp lastEtx = latestEnrichedTrx.value();
+        final Customer cust = referenceDataState.value();
+        final EnrichedTransaction etx = lastEtx.getEtx();
 
         if (cust != null) {
             etx.setDestName((cust.getFirstName() + " " + cust.getLastName()).trim());

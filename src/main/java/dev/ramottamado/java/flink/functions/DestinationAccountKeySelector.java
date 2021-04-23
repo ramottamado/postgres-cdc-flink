@@ -35,9 +35,7 @@ public class DestinationAccountKeySelector implements KeySelector<EnrichedTransa
     private static final long serialVersionUID = 12149238113L;
 
     @Override
-    public String getKey(EnrichedTransaction value) {
-        String destAcct = value.getDestAcct();
-
-        return (destAcct != null) ? destAcct : "NULL";
+    public String getKey(final EnrichedTransaction value) {
+        return (value.getDestAcct() != null) ? value.getDestAcct() : "NULL";
     }
 }

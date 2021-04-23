@@ -46,12 +46,12 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
      * @author      Tamado Sitohang
      * @since       1.0
      */
-    public DebeziumJSONEnvelopeDeserializationSchema(Class<T> type) {
+    public DebeziumJSONEnvelopeDeserializationSchema(final Class<T> type) {
         super(type);
     }
 
     @Override
-    public T deserialize(byte[] message) throws IOException {
+    public T deserialize(final byte[] message) throws IOException {
         ObjectNode node = mapper.createObjectNode();
 
         if (message != null) {
@@ -62,7 +62,7 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
             return mapper.treeToValue(
                     node.get("value").get("payload").get("after"),
                     super.getProducedType().getTypeClass());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             node = node.removeAll();
 
             return mapper.treeToValue(node,

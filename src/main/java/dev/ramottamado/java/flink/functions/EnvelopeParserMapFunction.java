@@ -47,12 +47,12 @@ public class EnvelopeParserMapFunction<T> implements MapFunction<ObjectNode, T> 
      * @see         KafkaTransactionsEnrichmentStreamingJob#writeEnrichedTransactionsOutput(DataStream)
      * @since       1.0
      */
-    public EnvelopeParserMapFunction(Class<T> type) {
+    public EnvelopeParserMapFunction(final Class<T> type) {
         this.type = type;
     }
 
     @Override
-    public T map(ObjectNode value) throws Exception {
+    public T map(final ObjectNode value) throws Exception {
         return mapper.treeToValue(value.get("value").get("payload").get("after"), type);
     }
 }

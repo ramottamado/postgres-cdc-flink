@@ -37,7 +37,7 @@ public class EnrichedTransactionsToStringMapFunction implements MapFunction<Enri
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String map(EnrichedTransaction value) {
+    public String map(final EnrichedTransaction value) {
         return mapper.valueToTree(value).toPrettyString();
     }
 }

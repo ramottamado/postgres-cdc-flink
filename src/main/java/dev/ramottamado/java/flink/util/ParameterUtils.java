@@ -43,13 +43,13 @@ public final class ParameterUtils {
      * @author                  Tamado Sitohang
      * @since                   1.0
      */
-    public static ParameterTool parseArgs(String[] args) throws RuntimeException {
+    public static ParameterTool parseArgs(final String[] args) throws RuntimeException {
         ParameterTool params = ParameterTool.fromArgs(args);
 
         if (params.has(PROPERTIES_FILE)) {
             try {
                 params = ParameterTool.fromPropertiesFile(params.getRequired(PROPERTIES_FILE)).mergeWith(params);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException("Cannot read properties file", e);
             }
         }

@@ -42,12 +42,12 @@ public class EnrichTransactionsWithCustomersJoinFunction
     private ValueState<TransactionWithTimestamp> latestTrx;
 
     @Override
-    public void open(Configuration parameters) {
-        ValueStateDescriptor<Customer> cDescriptor = new ValueStateDescriptor<>(
+    public void open(final Configuration parameters) {
+        final ValueStateDescriptor<Customer> cDescriptor = new ValueStateDescriptor<>(
                 "customers",
                 TypeInformation.of(Customer.class));
 
-        ValueStateDescriptor<TransactionWithTimestamp> tDescriptor = new ValueStateDescriptor<>(
+        final ValueStateDescriptor<TransactionWithTimestamp> tDescriptor = new ValueStateDescriptor<>(
                 "trxWithTimestamp",
                 TypeInformation.of(TransactionWithTimestamp.class));
 
@@ -56,14 +56,14 @@ public class EnrichTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement1(Transaction value, Context ctx, Collector<EnrichedTransaction> out)
+    public void processElement1(final Transaction value, final Context ctx, final Collector<EnrichedTransaction> out)
             throws Exception {
-        Customer customers = referenceDataState.value();
+        final Customer customers = referenceDataState.value();
 
         if (customers != null) {
             out.collect(joinTrxWithCustomers(value, customers));
         } else {
-            TransactionWithTimestamp trxWithTimestamp = new TransactionWithTimestamp();
+            final TransactionWithTimestamp trxWithTimestamp = new TransactionWithTimestamp();
             trxWithTimestamp.setTimestamp(ctx.timestamp());
             trxWithTimestamp.setTrx(value);
 
@@ -73,14 +73,15 @@ public class EnrichTransactionsWithCustomersJoinFunction
     }
 
     @Override
-    public void processElement2(Customer value, Context ctx, Collector<EnrichedTransaction> out)
+    public void processElement2(final Customer value, final Context ctx, final Collector<EnrichedTransaction> out)
             throws Exception {
         referenceDataState.update(value);
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<EnrichedTransaction> out) throws Exception {
-        TransactionWithTimestamp lastTrx = latestTrx.value();
+    public void onTimer(final long timestamp, final OnTimerContext ctx, final Collector<EnrichedTransaction> out)
+            throws Exception {
+        final TransactionWithTimestamp lastTrx = latestTrx.value();
         EnrichedTransaction enrichedTrx = new EnrichedTransaction();
 
         if (referenceDataState.value() != null) {
@@ -104,8 +105,8 @@ public class EnrichTransactionsWithCustomersJoinFunction
      * @param  cust the customer used to enrich the transaction record
      * @return      the enriched transaction
      */
-    private EnrichedTransaction joinTrxWithCustomers(Transaction trx, Customer cust) {
-        EnrichedTransaction enrichedTrx = new EnrichedTransaction();
+    private EnrichedTransaction joinTrxWithCustomers(final Transaction trx, final Customer cust) {
+        final EnrichedTransaction enrichedTrx = new EnrichedTransaction();
 
         enrichedTrx.setCif(cust.getCif());
         enrichedTrx.setAmount(trx.getAmount());

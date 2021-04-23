@@ -41,8 +41,8 @@ public class JSONValueDeserializationSchema extends AbstractDeserializationSchem
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public ObjectNode deserialize(byte[] message) throws IOException {
-        ObjectNode node = mapper.createObjectNode();
+    public ObjectNode deserialize(final byte[] message) throws IOException {
+        final ObjectNode node = mapper.createObjectNode();
 
         if (message != null) {
             node.set("value", mapper.readValue(message, JsonNode.class));
@@ -52,7 +52,7 @@ public class JSONValueDeserializationSchema extends AbstractDeserializationSchem
     }
 
     @Override
-    public boolean isEndOfStream(ObjectNode nextElement) {
+    public boolean isEndOfStream(final ObjectNode nextElement) {
         return false; // Unbounded stream
     }
 

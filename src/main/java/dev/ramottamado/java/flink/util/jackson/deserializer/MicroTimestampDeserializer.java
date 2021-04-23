@@ -57,17 +57,17 @@ public class MicroTimestampDeserializer extends StdDeserializer<Instant> {
      * @since     1.0
      */
     @VisibleForTesting
-    public MicroTimestampDeserializer(Class<?> vc) {
+    public MicroTimestampDeserializer(final Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public Instant deserialize(JsonParser parser, DeserializationContext ctx) {
+    public Instant deserialize(final JsonParser parser, final DeserializationContext ctx) {
         try {
-            long timestamp = parser.getLongValue() / 1000000;
+            final long timestamp = parser.getLongValue() / 1000000;
 
             return Instant.ofEpochSecond(timestamp, 0);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return null;
         }
     }

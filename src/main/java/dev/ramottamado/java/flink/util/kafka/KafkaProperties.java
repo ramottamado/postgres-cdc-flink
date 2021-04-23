@@ -45,8 +45,8 @@ public class KafkaProperties {
      * @author                  Tamado Sitohang
      * @since                   1.0
      */
-    public static Properties getProperties(ParameterTool params) throws RuntimeException {
-        Properties properties = new Properties();
+    public static Properties getProperties(final ParameterTool params) throws RuntimeException {
+        final Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", params.getRequired(KAFKA_BOOTSTRAP_SERVER));
         properties.setProperty("group.id", params.get(KAFKA_CONSUMER_GROUP_ID, "flink-cdc-consumer"));
         properties.setProperty("auto.offset.reset", params.get(KAFKA_AUTO_OFFSET_RESET, "latest"));
