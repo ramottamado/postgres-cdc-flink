@@ -30,9 +30,13 @@ import dev.ramottamado.java.flink.annotation.Internal;
 @Internal
 public abstract class ClassWithTimestamp implements Serializable {
     private static final long serialVersionUID = 1L;
-    public long timestamp;
+    private long timestamp;
 
-    public abstract long getTimestamp();
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-    public abstract void setTimestamp(long timestamp);
+    public void setTimestamp(final long timestamp) {
+        this.timestamp = timestamp;
+    }
 }

@@ -16,26 +16,25 @@
 
 package dev.ramottamado.java.flink.util.serialization;
 
-import static org.apache.flink.api.java.typeutils.TypeExtractor.getForClass;
-
 import java.io.IOException;
 
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
-
-import dev.ramottamado.java.flink.annotation.Internal;
 
 /**
  * The {@link JSONValueDeserializationSchema} describes how to deserialize message from Debezium
  * into {@link ObjectNode}.
  *
- * @author Tamado Sitohang
- * @since  1.0
+ * @author     Tamado Sitohang
+ * @since      1.0
+ * @deprecated Use custom serialization with {@link DebeziumJSONEnvelopeDeserializationSchema} as {@link ObjectNode} is
+ *             not POJO
  */
-@Internal
+@Deprecated
 public class JSONValueDeserializationSchema extends AbstractDeserializationSchema<ObjectNode> {
     private static final long serialVersionUID = -91238719810201L;
     private final ObjectMapper mapper = new ObjectMapper();
@@ -58,6 +57,6 @@ public class JSONValueDeserializationSchema extends AbstractDeserializationSchem
 
     @Override
     public TypeInformation<ObjectNode> getProducedType() {
-        return getForClass(ObjectNode.class);
+        return TypeExtractor.getForClass(ObjectNode.class);
     }
 }

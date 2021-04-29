@@ -123,10 +123,11 @@ public class Customer implements Serializable {
             Customer that = (Customer) o;
 
             return ((this.acctNumber == null ? that.getAcctNumber() == null
-                    : this.acctNumber.equals(that.getAcctNumber())) &&
-                    (this.cif == null ? that.getCif() == null : this.cif.equals(that.getCif())) &&
-                    (this.city == null ? that.getCity() == null : this.city.equals(that.getCity())) &&
-                    (this.firstName == null ? that.getFirstName() == null : this.firstName.equals(that.getFirstName()))
+                    : this.acctNumber.equals(that.getAcctNumber()))
+                    && (this.cif == null ? that.getCif() == null : this.cif.equals(that.getCif()))
+                    && (this.city == null ? that.getCity() == null : this.city.equals(that.getCity()))
+                    && (this.firstName == null ? that.getFirstName() == null
+                            : this.firstName.equals(that.getFirstName()))
                     && (this.lastName == null ? that.getLastName() == null : this.lastName.equals(that.getLastName())));
         }
 

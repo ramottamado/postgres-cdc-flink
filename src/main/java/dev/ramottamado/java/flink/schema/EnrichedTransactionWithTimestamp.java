@@ -28,7 +28,6 @@ import dev.ramottamado.java.flink.api.schema.ClassWithTimestamp;
 @PublicEvolving
 public class EnrichedTransactionWithTimestamp extends ClassWithTimestamp {
     private static final long serialVersionUID = -2005L;
-    private long timestamp;
     private EnrichedTransaction etx;
 
     /**
@@ -39,16 +38,6 @@ public class EnrichedTransactionWithTimestamp extends ClassWithTimestamp {
      */
     @PublicEvolving
     public EnrichedTransactionWithTimestamp() {
-    }
-
-    @Override
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    @Override
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public EnrichedTransaction getEtx() {
@@ -67,7 +56,7 @@ public class EnrichedTransactionWithTimestamp extends ClassWithTimestamp {
             EnrichedTransactionWithTimestamp that = (EnrichedTransactionWithTimestamp) o;
 
             return ((this.etx == null ? that.getEtx() == null : this.etx.equals(that.getEtx()))
-                    && this.timestamp == that.getTimestamp());
+                    && this.getTimestamp() == that.getTimestamp());
         }
 
         return false;

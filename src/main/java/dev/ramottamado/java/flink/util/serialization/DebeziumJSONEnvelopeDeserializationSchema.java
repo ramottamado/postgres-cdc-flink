@@ -37,6 +37,7 @@ import dev.ramottamado.java.flink.annotation.PublicEvolving;
 public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeserializationSchema<T> {
     private static final long serialVersionUID = -91238719810201L;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final Class<T> type;
 
     /**
      * The {@link DebeziumJSONEnvelopeDeserializationSchema} describes how to deserialize byte messages from Debezium
@@ -48,6 +49,7 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
      */
     public DebeziumJSONEnvelopeDeserializationSchema(final Class<T> type) {
         super(type);
+        this.type = type;
     }
 
     @Override
@@ -59,14 +61,11 @@ public class DebeziumJSONEnvelopeDeserializationSchema<T> extends AbstractDeseri
         }
 
         try {
-            return mapper.treeToValue(
-                    node.get("value").get("payload").get("after"),
-                    super.getProducedType().getTypeClass());
+            return mapper.treeToValue(node.get("value").get("payload").get("after"), type);
         } catch (final Exception e) {
             node = node.removeAll();
 
-            return mapper.treeToValue(node,
-                    super.getProducedType().getTypeClass());
+            return mapper.treeToValue(node, type);
         }
 
     }

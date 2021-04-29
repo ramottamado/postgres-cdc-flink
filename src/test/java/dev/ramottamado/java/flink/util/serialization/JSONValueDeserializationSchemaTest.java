@@ -24,8 +24,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class JSONValueDeserializationSchemaTest {
-    private final JSONValueDeserializationSchema jsonValueDeserializationSchemaTest = new JSONValueDeserializationSchema();
+    private final JSONValueDeserializationSchema jsonValueDeserializationSchemaTest =
+            new JSONValueDeserializationSchema();
     private final ObjectMapper mapper = new ObjectMapper();
     private static String dummyEnvelope;
     private static byte[] message;

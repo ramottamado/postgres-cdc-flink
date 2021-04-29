@@ -123,12 +123,13 @@ public class Transaction implements Serializable {
         } else if (o != null && getClass() == o.getClass()) {
             Transaction that = (Transaction) o;
 
-            return ((this.amount == null ? that.getAmount() == null : this.amount.equals(that.getAmount())) &&
-                    (this.destAcct == null ? that.getDestAcct() == null : this.destAcct.equals(that.getDestAcct())) &&
-                    (this.srcAcct == null ? that.getSrcAcct() == null : this.srcAcct.equals(that.getSrcAcct())) &&
-                    (this.trxTimestamp == null ? that.getTrxTimestamp() == null
+            return ((this.amount == null ? that.getAmount() == null : this.amount.equals(that.getAmount()))
+                    && (this.destAcct == null ? that.getDestAcct() == null : this.destAcct.equals(that.getDestAcct()))
+                    && (this.srcAcct == null ? that.getSrcAcct() == null : this.srcAcct.equals(that.getSrcAcct()))
+                    && (this.trxTimestamp == null ? that.getTrxTimestamp() == null
                             : this.trxTimestamp.equals(that.getTrxTimestamp()))
-                    && (this.trxType == null ? that.getTrxType() == null : this.trxType.equals(that.getTrxType())));
+                    && (this.trxType == null ? that.getTrxType() == null
+                            : this.trxType.equals(that.getTrxType())));
         }
 
         return false;
