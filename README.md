@@ -1,6 +1,7 @@
 # Enriching Kafka Stream with Another Stream Using Flink
 
 [![codecov](https://codecov.io/gh/ramottamado/postgres-cdc-flink/branch/main/graph/badge.svg?token=ZVUN5AP7WA)](https://codecov.io/gh/ramottamado/postgres-cdc-flink)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Framottamado%2Fpostgres-cdc-flink.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Framottamado%2Fpostgres-cdc-flink?ref=badge_shield)
 
 ## Environment Setup
 1. Install PostgreSQL 11+
@@ -40,3 +41,6 @@
 9. `--source-topic-2`: Kafka customers stream name
 10. `--target-topic`: target topic name to publish enriched data
 11. `--properties-file`: properties file to load parameters from
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Framottamado%2Fpostgres-cdc-flink.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Framottamado%2Fpostgres-cdc-flink?ref=badge_large)
